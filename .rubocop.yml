@@ -1,0 +1,122 @@
+plugins:
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: false
+
+Bundler/OrderedGems:
+  Enabled: false
+
+Layout/ClassStructure:
+  Enabled: true
+  ExpectedOrder:
+    - module_inclusion
+    - constants
+    - attribute_macros
+    - inner_classes
+    - initializer
+    - public_class_methods
+    - public_methods
+    - protected_methods
+    - private_methods
+  Categories:
+    attribute_macros:
+      - attr_accessor
+      - attr_reader
+      - attr_writer
+    module_inclusion:
+      - include
+      - prepend
+      - extend
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/LineLength:
+  Max: 120
+  AllowedPatterns:
+    # Allow full-line comments to exceed the limit
+    - !ruby/regexp /^\s*#/
+
+Layout/MultilineAssignmentLayout:
+  Enabled: true
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented_relative_to_receiver
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/BlockLength:
+  CountAsOne: &count_as_one_rule
+    - array
+    - hash
+    - heredoc
+    - method_call
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/ClassLength:
+  CountAsOne: *count_as_one_rule
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/MethodLength:
+  Max: 15
+  CountAsOne: *count_as_one_rule
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/ModuleLength:
+  CountAsOne: *count_as_one_rule
+  Exclude:
+    - 'spec/**/*'
+
+Style/BlockDelimiters:
+  BracesRequiredMethods:
+    - expect
+
+Style/Documentation:
+  Enabled: false
+
+Style/EndlessMethod:
+  EnforcedStyle: disallow
+
+Style/HashSyntax:
+  EnforcedStyle: ruby19_no_mixed_keys
+  EnforcedShorthandSyntax: always
+
+Style/MultilineMethodSignature:
+  Enabled: true
+
+Style/NumberedParameters:
+  EnforcedStyle: disallow
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+RSpec/VerifiedDoubleReference:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 10
+  CountAsOne: *count_as_one_rule
+
+# aggregate_failures are enabled globally instead
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 4

@@ -1,0 +1,1467 @@
+/*!
+ * MissionControl Jobs — Emerald Theme
+ * A polished, opinionated reskin for mission_control-jobs (Bulma-based).
+ * Replaces the default UI with refined typography, structured design tokens,
+ * and cohesive component styling for improved readability and visual clarity.
+ *
+ * Loaded after bulma.min.css — equal-specificity selectors win by cascade.
+ * Where Bulma uses higher specificity, we match or exceed it.
+ */
+
+/* -- Fonts ---------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Archivo Narrow';
+  src: url('../fonts/Archivo_Narrow/ArchivoNarrow-VariableFont_wght.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Albert Sans';
+  src: url('../fonts/Albert_Sans/AlbertSans-VariableFont_wght.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* -- CSS custom properties (design tokens) -------------------------------- */
+
+:root {
+  --mc-primary: #13795b;
+  --mc-primary-hover: #0f6349;
+  --mc-primary-dark: #0b5a42;
+  --mc-primary-subtle: rgba(19, 121, 91, 0.05);
+  --mc-primary-tint: rgba(19, 121, 91, 0.12);
+  --mc-primary-ring: rgba(19, 121, 91, 0.4);
+  --mc-dark: #1F3D2A;
+  --mc-dark-lighter: #2a5038;
+  --mc-light: #f0f7f4;
+  --mc-bg: #f8f9fa;
+  --mc-gold: #a8893a;
+  --mc-gold-dark: #7a6520;
+  --mc-gold-hover: #8f7530;
+  --mc-gold-muted: rgba(122, 101, 32, 0.5);
+  --mc-gold-tint: rgba(168, 137, 58, 0.08);
+  --mc-gold-border: rgba(168, 137, 58, 0.25);
+  --mc-iris: #6A5FA0;
+  --mc-iris-dark: #5a5090;
+  --mc-iris-tint: rgba(106, 95, 160, 0.1);
+  --mc-danger: #dc3545;
+  --mc-danger-dark: #a71d2a;
+  --mc-danger-hover: #c82333;
+  --mc-danger-muted: rgba(167, 29, 42, 0.5);
+  --mc-danger-tint: rgba(220, 53, 69, 0.08);
+  --mc-danger-border: rgba(220, 53, 69, 0.22);
+  --mc-body-color: #495057;
+  --mc-body-secondary: #6c757d;
+  --mc-body-tertiary: #adb5bd;
+  --mc-border: #e9ecef;
+  --mc-neutral-bg: rgba(173, 181, 189, 0.12);
+  --mc-neutral-border: rgba(173, 181, 189, 0.25);
+  --mc-neutral-hover: rgba(173, 181, 189, 0.3);
+  --mc-font-body: 'Albert Sans', sans-serif;
+  --mc-font-heading: 'Archivo Narrow', sans-serif;
+  --mc-font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, monospace;
+  --mc-panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --mc-radius: 0.5rem;
+  --mc-radius-sm: 0.375rem;
+  --mc-transition: 0.15s ease;
+}
+
+/* -- Base typography ------------------------------------------------------ */
+
+html {
+  background-color: var(--mc-bg);
+}
+
+body {
+  font-family: var(--mc-font-body);
+  font-weight: 300;
+  color: var(--mc-body-color);
+  background-color: var(--mc-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+
+  & b,
+  & strong {
+    font-weight: 600;
+  }
+}
+
+/* Headings — Archivo Narrow 600, teal */
+.title,
+.subtitle {
+  font-family: var(--mc-font-heading);
+  font-weight: 600;
+  color: var(--mc-primary);
+}
+
+/* Page title (h1.title) — clean typographic header, no box treatment */
+h1.title {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 0 !important;
+  border: none;
+  border-image: none;
+  letter-spacing: -0.01em;
+}
+
+/* Section subtitle (h2.subtitle) — card header of a unified panel.
+   The subtitle + following content (pre, table, box) form a single visual card. */
+h2.subtitle {
+  font-family: var(--mc-font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mc-primary);
+  background-color: var(--mc-light);
+  border: 1px solid var(--mc-border);
+  border-bottom: 1px solid var(--mc-primary-subtle);
+  border-radius: var(--mc-radius) var(--mc-radius) 0 0;
+  box-shadow: var(--mc-panel-shadow);
+  padding: 0.6rem 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0 !important;
+
+  /* Card body that follows a subtitle — seamless connection, shared shadow */
+  & + .table,
+  & + pre,
+  & + .box,
+  & + div > .table:first-child {
+    border-radius: 0 0 var(--mc-radius) var(--mc-radius) !important;
+    border-top: none !important;
+    margin-top: 0 !important;
+    box-shadow: var(--mc-panel-shadow);
+    border: 1px solid var(--mc-border);
+    border-top: none;
+  }
+
+  /* Datagrid thead corners — flatten when table follows a subtitle (unified card) */
+  & + .table thead tr:first-child th:first-child,
+  & + .table thead tr:first-child th:last-child {
+    border-radius: 0 !important;
+  }
+
+  /* Pre blocks as card body — adjust for unified card look */
+  & + pre {
+    background-color: #fff;
+    border-left: 1px solid var(--mc-border);
+    border-right: 1px solid var(--mc-border);
+    border-bottom: 1px solid var(--mc-border);
+  }
+}
+
+/* Subtitle after a separator — consistent breathing room */
+hr + h2.subtitle {
+  margin-top: 0.75rem !important;
+}
+
+.is-family-monospace {
+  font-family: var(--mc-font-mono) !important;
+  font-size: 0.85rem;
+}
+
+/* -- Links ---------------------------------------------------------------- */
+
+a {
+  color: var(--mc-primary);
+  text-decoration: none;
+  transition: color var(--mc-transition);
+
+  &:hover {
+    color: var(--mc-primary-hover);
+    text-decoration: underline;
+    text-underline-offset: 0.375em;
+  }
+}
+
+/* -- Navbar (gold breadcrumb bar — matches app's wayfinding pattern) ------ */
+
+.navbar {
+  background: var(--mc-gold-tint);
+  border-radius: var(--mc-radius);
+  margin-bottom: 1rem;
+  min-height: auto;
+  box-shadow: none;
+  padding: 0;
+
+  /* Override Bulma's mb-4 on .navbar-menu.is-active inside the breadcrumb bar */
+  & .navbar-menu.mb-4 {
+    margin-bottom: 0 !important;
+  }
+}
+
+.navbar-menu {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+/* All items within the breadcrumb bar — gold-tinted label-tier */
+.navbar-item,
+.navbar-link {
+  font-family: var(--mc-font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mc-gold-muted);
+  padding: 0.4rem 0.65rem;
+  transition: color var(--mc-transition);
+  border-radius: var(--mc-radius-sm);
+
+  &:hover,
+  &:focus {
+    color: var(--mc-gold-dark);
+    background-color: transparent;
+    text-decoration: none;
+  }
+
+  &.is-active {
+    color: var(--mc-gold-dark);
+    background-color: transparent;
+  }
+}
+
+/* "Back to main app" — the primary breadcrumb link with left arrow */
+.navbar-start a {
+  font-family: var(--mc-font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mc-gold-muted);
+  padding: 0.4rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color var(--mc-transition);
+  line-height: 1.4;
+
+  &:hover {
+    color: var(--mc-gold-dark);
+    text-decoration: none;
+  }
+
+  &::before {
+    content: "\2039";
+    font-size: 1.3rem;
+    font-weight: 300;
+    line-height: 1;
+  }
+}
+
+/* Navbar end items (server/app selectors) */
+.navbar-start .navbar-item,
+.navbar-end .navbar-item {
+  color: var(--mc-gold-muted);
+
+  &:hover {
+    color: var(--mc-gold-dark);
+    background-color: transparent;
+  }
+}
+
+/* Dropdown — gold-tinted card for multi-app selector */
+.navbar-dropdown {
+  background-color: #fff;
+  border-top: 2px solid var(--mc-gold);
+  border-radius: 0 0 var(--mc-radius) var(--mc-radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 0.25rem;
+
+  & .navbar-item {
+    color: var(--mc-body-color);
+    border-radius: var(--mc-radius-sm);
+    font-size: 0.85rem;
+    text-transform: none;
+    letter-spacing: normal;
+
+    &:hover,
+    &:focus {
+      color: var(--mc-gold-dark);
+      background-color: var(--mc-gold-tint);
+    }
+  }
+}
+
+.navbar-divider {
+  background-color: var(--mc-border);
+}
+
+.navbar-burger {
+  color: var(--mc-gold-dark);
+
+  & span {
+    background-color: var(--mc-gold-dark);
+  }
+}
+
+/* Replace Bulma's border-arrow with a crisp text character */
+.navbar-link {
+  position: relative;
+  padding-right: 1.4rem !important;
+
+  &::after {
+    display: none !important;
+  }
+
+  &::before {
+    content: "▾";
+    position: absolute;
+    right: 0.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: rgba(122, 101, 32, 0.4);
+    line-height: 1;
+    transition: color var(--mc-transition), transform 0.2s ease;
+  }
+
+  &:hover::before {
+    color: var(--mc-gold-dark);
+  }
+}
+
+/* Dropdown chevron rotation */
+.navbar-item.has-dropdown.is-active .navbar-link::before {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* -- Tabs (segmented control — connected pill segments) ------------------- */
+
+.tabs {
+  margin-bottom: 1.25rem;
+  border-bottom: none;
+
+  &:not(.is-toggle) {
+    & ul {
+      border-bottom: none !important;
+      gap: 0;
+    }
+
+    & a {
+      color: var(--mc-body-secondary);
+      border: 1px solid var(--mc-border) !important;
+      border-right-width: 0 !important;
+      border-radius: 0 !important;
+      background-color: #fff !important;
+      font-family: var(--mc-font-heading);
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.45rem 0.85rem;
+      transition: all var(--mc-transition);
+      margin-bottom: 0;
+
+      &:hover {
+        color: var(--mc-primary);
+        background-color: var(--mc-primary-subtle) !important;
+        text-decoration: none;
+      }
+    }
+
+    & li:last-child a {
+      border-right-width: 1px !important;
+      border-radius: 0 var(--mc-radius-sm) var(--mc-radius-sm) 0 !important;
+    }
+
+    & li:first-child a {
+      border-radius: var(--mc-radius-sm) 0 0 var(--mc-radius-sm) !important;
+    }
+
+    & li.is-active a {
+      color: #fff !important;
+      background-color: var(--mc-primary) !important;
+      border-color: var(--mc-primary) !important;
+    }
+
+    /* Restore right border on the item before active (avoid double-border gap) */
+    & li.is-active + li a {
+      border-left-color: var(--mc-primary) !important;
+    }
+
+    /* Failed jobs tab — subtle danger accent for operational awareness */
+    & a[href*="/failed/"] {
+      color: var(--mc-danger-muted) !important;
+
+      &:hover {
+        color: var(--mc-danger-dark) !important;
+        background-color: var(--mc-danger-tint) !important;
+      }
+    }
+  }
+
+  &:not(.is-toggle) li.is-active a[href*="/failed/"],
+  &.is-boxed li.is-active a[href*="/failed/"] {
+    color: #fff !important;
+    background-color: var(--mc-danger) !important;
+    border-color: var(--mc-danger) !important;
+  }
+
+  /* Toggle tabs (server selector, backtrace toggle) */
+  &.is-toggle {
+    & a {
+      border-color: var(--mc-border);
+      color: var(--mc-body-secondary);
+      transition: all var(--mc-transition);
+      text-decoration: none;
+
+      &:hover {
+        background-color: var(--mc-light);
+        border-color: var(--mc-border);
+        color: var(--mc-primary);
+        text-decoration: none;
+      }
+    }
+
+    & li.is-active a {
+      background-color: var(--mc-primary);
+      border-color: var(--mc-primary);
+      color: #fff;
+    }
+
+    &.is-toggle-rounded li:first-child a {
+      border-radius: 9999px 0 0 9999px;
+      padding-left: 1em;
+    }
+
+    &.is-toggle-rounded li:last-child a {
+      border-radius: 0 9999px 9999px 0;
+      padding-right: 1em;
+    }
+  }
+
+  /* Focus ring — keyboard accessibility for tab navigation */
+  & a:focus-visible {
+    outline: 2px solid var(--mc-primary-tint);
+    outline-offset: -2px;
+    border-radius: var(--mc-radius-sm);
+  }
+}
+
+/* Server selector in navbar — gold-tinted toggle matching breadcrumb bar */
+.server-selector .tabs {
+  margin-bottom: 0;
+
+  &.is-toggle {
+    & a {
+      border-color: var(--mc-gold-border);
+      color: var(--mc-gold-muted);
+      background-color: transparent;
+      font-size: 0.75rem;
+      padding: 0.25em 0.75em;
+      transition: all var(--mc-transition);
+
+      &:hover {
+        background-color: rgba(168, 137, 58, 0.18);
+        border-color: rgba(168, 137, 58, 0.35);
+        color: var(--mc-gold-dark);
+        text-decoration: none;
+      }
+    }
+
+    & li.is-active a {
+      background-color: var(--mc-gold-dark);
+      border-color: var(--mc-gold-dark);
+      color: #fff;
+    }
+  }
+}
+
+/* Backtrace toggle — position refinement */
+.backtrace-toggle-selector {
+  margin-top: -0.25rem;
+
+  & .tabs {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* -- Tables --------------------------------------------------------------- */
+
+.table {
+  background-color: #fff;
+  color: var(--mc-body-color);
+  border-radius: var(--mc-radius);
+  overflow: clip;
+  box-shadow: var(--mc-panel-shadow);
+
+  & th {
+    font-family: var(--mc-font-heading);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mc-body-secondary);
+    border-color: var(--mc-border);
+    border-width: 0 0 1px;
+    padding: 0.6rem 1rem;
+  }
+
+  & td {
+    border-color: var(--mc-border);
+    vertical-align: middle;
+    padding: 0.6rem 1rem;
+    border-width: 0 0 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Last row — no bottom border */
+  & tbody tr:last-child td,
+  & tbody tr:last-child th {
+    border-bottom-width: 0;
+  }
+
+  &.is-hoverable tbody tr:not(.is-selected):hover {
+    background-color: var(--mc-primary-subtle);
+  }
+
+  &.is-fullwidth {
+    width: 100%;
+  }
+
+  & thead td,
+  & thead th {
+    color: var(--mc-body-secondary);
+    border-width: 0 0 2px;
+    border-color: var(--mc-border);
+  }
+}
+
+/* -- Datagrid-style table headers (jobs listing, queues, workers) --------- */
+/* Match the main app's datagrid: teal header with white label-tier text */
+
+:is(table.jobs, table.queues, table.workers, table.recurring-tasks) {
+  & thead th {
+    background-color: var(--mc-primary);
+    color: #fff;
+    border-bottom: none;
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  & thead {
+    border-radius: var(--mc-radius) var(--mc-radius) 0 0;
+  }
+
+  & thead tr:first-child th:first-child {
+    border-radius: var(--mc-radius) 0 0 0;
+  }
+
+  & thead tr:first-child th:last-child {
+    border-radius: 0 var(--mc-radius) 0 0;
+  }
+
+  /* Action column — constrain width, align right with breathing room */
+  & :is(thead th, tbody td):last-child {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+    padding-right: 1.25rem !important;
+  }
+
+  /* Clickable table rows — pointer cursor for job/queue/worker rows */
+  & tbody tr {
+    transition: background-color var(--mc-transition);
+    cursor: default;
+
+    &:hover {
+      background-color: var(--mc-primary-subtle);
+    }
+
+    /* Zebra striping — teal-tinted to match the app's datagrid */
+    &:nth-child(even):not(:hover) {
+      background-color: rgba(19, 121, 91, 0.03);
+    }
+  }
+}
+
+/* Job listing — secondary metadata (arguments, enqueue time, error time) */
+table.jobs tbody {
+  & td:first-child a ~ *,
+  & td:nth-child(2) a ~ * {
+    font-size: 0.8rem;
+    color: var(--mc-body-tertiary);
+    margin-top: 0.1rem;
+    line-height: 1.4;
+  }
+
+  /* First metadata line (arguments GID) — monospace for technical identifiers.
+     Only when there's a third child (the enqueued line), so the GID sits between link and timestamp. */
+  & td:first-child:has(:nth-child(3)) a + * {
+    font-family: var(--mc-font-mono);
+    font-size: 0.75rem;
+  }
+}
+
+/* Timestamp columns — monospace for dashboard-grade data alignment */
+table.jobs tbody td:nth-child(3),
+table.workers tbody td:last-child,
+table.recurring-tasks tbody td:nth-child(4),
+table.recurring-tasks tbody td:nth-child(5) {
+  font-family: var(--mc-font-mono);
+  font-size: 0.82rem;
+  color: var(--mc-body-secondary);
+}
+
+/* -- Recurring tasks table refinements ------------------------------------ */
+
+table.recurring-tasks {
+  /* Empty first header — label it "TASK" via pseudo-element */
+  & thead th:first-child::after {
+    content: "Task";
+  }
+
+  /* Header columns — never wrap */
+  & thead th {
+    white-space: nowrap;
+  }
+
+  /* Job column (2nd) — monospace, smaller, allow wrapping for long class names */
+  & tbody td:nth-child(2) {
+    font-family: var(--mc-font-mono);
+    font-size: 0.78rem;
+    color: var(--mc-body-secondary);
+    word-break: break-all;
+  }
+
+  /* Schedule (3rd), Last enqueued (4th), and Next (5th) columns — prevent awkward wrapping */
+  & tbody td:nth-child(3),
+  & tbody td:nth-child(4),
+  & tbody td:nth-child(5) {
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+}
+
+/* Responsive — allow horizontal scroll on small screens */
+@media screen and (max-width: 1024px) {
+  table.recurring-tasks {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Worker PID secondary text — monospace + muted, matching job listing GID style */
+table.workers tbody td:first-child {
+  font-size: 0.8rem;
+  color: var(--mc-body-tertiary);
+  font-family: var(--mc-font-mono);
+  line-height: 1.4;
+
+  & br {
+    display: none;
+  }
+
+  & a {
+    font-size: 0.95rem;
+    font-family: var(--mc-font-body);
+    font-weight: 600;
+    display: block;
+    color: var(--mc-primary);
+    margin-bottom: 0.1rem;
+  }
+}
+
+/* -- Detail tables (show pages: job info, recurring task info) ------------- */
+/* Match admin-detail-table: label-tier th, 30% width, muted color */
+
+.table:not(:is(.jobs, .queues, .workers, .recurring-tasks)) {
+  width: min(100%, 720px);
+
+  & th {
+    color: var(--mc-body-tertiary);
+    white-space: nowrap;
+    width: 30%;
+    font-size: 0.8rem;
+    background: none;
+  }
+
+  & td {
+    color: var(--mc-body-color);
+    font-family: var(--mc-font-mono);
+    font-size: 0.85rem;
+  }
+
+  /* Tags/badges within detail tables — monospace font to match surrounding values */
+  & td .tag,
+  & td .tag a {
+    font-family: var(--mc-font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Subtitle preceding a detail table — match the table's max width */
+h2.subtitle:has(+ .table:not(:is(.jobs, .queues, .workers, .recurring-tasks))) {
+  width: min(100%, 720px);
+}
+
+/* -- Tags / Badges -------------------------------------------------------- */
+
+.tag {
+  border-radius: 0.3rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-size: 0.75rem;
+  line-height: 1.4;
+
+  &.is-warning {
+    background-color: rgba(168, 137, 58, 0.15);
+    color: var(--mc-gold-dark);
+  }
+
+  &.is-danger {
+    background-color: var(--mc-danger-tint);
+    color: var(--mc-danger-dark);
+  }
+
+  &.is-success,
+  &.is-primary,
+  &.is-link {
+    background-color: var(--mc-primary-tint);
+    color: var(--mc-primary);
+  }
+
+  &.is-info {
+    background-color: var(--mc-iris-tint);
+    color: var(--mc-iris);
+  }
+
+  &.is-light {
+    background-color: var(--mc-light);
+    color: var(--mc-body-color);
+  }
+
+  /* Plain .tag (queue link on job show) — subtle teal tint */
+  &:not([class*="is-"]) {
+    background-color: var(--mc-light);
+    color: var(--mc-primary);
+
+    & a {
+      color: var(--mc-primary);
+    }
+  }
+}
+
+/* Status tag next to h1.title — typography and spacing only; color comes from .tag.is-* variants */
+h1.title .tag {
+  font-family: var(--mc-font-mono) !important;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.4em 0.85em;
+  border-radius: var(--mc-radius-sm);
+  margin-left: 0.25rem !important;
+  align-self: center;
+  letter-spacing: 0.01em;
+
+  /* Failed status in title — solid red for immediate visibility */
+  &.is-danger {
+    background-color: var(--mc-danger);
+    color: #fff;
+  }
+
+  /* Success status in title — solid teal */
+  &.is-success {
+    background-color: var(--mc-primary);
+    color: #fff;
+  }
+
+  /* In-progress status in title — solid iris */
+  &.is-primary,
+  &.is-link {
+    background-color: var(--mc-iris);
+    color: #fff;
+  }
+}
+
+/* -- Buttons -------------------------------------------------------------- */
+
+.button {
+  font-family: var(--mc-font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: var(--mc-radius-sm);
+  transition: background-color var(--mc-transition), box-shadow var(--mc-transition), color var(--mc-transition), border-color var(--mc-transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  &:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.15rem var(--mc-primary-tint);
+    outline: none;
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: none;
+    }
+  }
+
+  &.is-primary,
+  &.is-link,
+  &.is-success,
+  &.is-success.is-light {
+    background-color: var(--mc-primary);
+    border-color: var(--mc-primary);
+    color: #fff;
+  }
+
+  &.is-primary:hover,
+  &.is-primary:focus-visible,
+  &.is-link:hover,
+  &.is-link:focus-visible,
+  &.is-success:hover,
+  &.is-success:focus-visible,
+  &.is-success.is-light:hover {
+    background-color: var(--mc-primary-hover);
+    border-color: var(--mc-primary-hover);
+    color: #fff;
+  }
+
+  /* Danger button — tint-to-solid escalation on hover (matches admin) */
+  &.is-danger {
+    background-color: rgba(220, 53, 69, 0.12);
+    color: var(--mc-danger-dark);
+    border-color: var(--mc-danger-border);
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--mc-danger-hover);
+      color: #fff;
+      border-color: var(--mc-danger-hover);
+    }
+
+    &.is-light {
+      background-color: var(--mc-danger-tint);
+      color: var(--mc-danger-dark);
+      border-color: rgba(220, 53, 69, 0.18);
+      box-shadow: none;
+
+      &:hover {
+        background-color: var(--mc-danger-hover);
+        color: #fff;
+        border-color: var(--mc-danger-hover);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  &.is-info {
+    background-color: var(--mc-iris);
+    border-color: var(--mc-iris);
+    color: #fff;
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--mc-iris-dark);
+      border-color: var(--mc-iris-dark);
+      color: #fff;
+    }
+  }
+
+  /* Warning button — solid gold (matches admin btn-warning).
+     .is-light variant kept solid so MC action buttons match admin. */
+  &.is-warning,
+  &.is-warning.is-light {
+    background-color: var(--mc-gold);
+    border-color: var(--mc-gold);
+    color: #fff;
+  }
+
+  &.is-warning:hover,
+  &.is-warning:focus-visible,
+  &.is-warning.is-light:hover {
+    background-color: var(--mc-gold-hover);
+    border-color: var(--mc-gold-hover);
+    color: #fff;
+  }
+
+  /* Light button + plain button — neutral secondary (matches admin btn-secondary) */
+  &.is-light,
+  &:not([class*="is-"]) {
+    background-color: var(--mc-neutral-bg);
+    border-color: var(--mc-neutral-border);
+    color: var(--mc-body-secondary);
+    box-shadow: none;
+  }
+
+  &.is-light:hover {
+    background-color: var(--mc-neutral-hover);
+    color: var(--mc-body-color);
+    border-color: var(--mc-neutral-border);
+  }
+
+  &:not([class*="is-"]):hover {
+    background-color: var(--mc-neutral-hover);
+    color: var(--mc-body-color);
+  }
+}
+
+/* Grouped buttons — tighter gap */
+.buttons {
+  & .button:not(:last-child):not(.is-fullwidth) {
+    margin-right: 0.375rem;
+  }
+
+  /* Bulk action buttons (Discard All / Retry All) — close the gap */
+  &.is-right.level-right {
+    gap: 0.125rem;
+  }
+}
+
+/* Row action buttons (Discard / Retry) — always inline, no wrapping */
+table.jobs td .buttons {
+  flex-wrap: nowrap;
+  gap: 0.375rem;
+}
+
+/* -- Forms ---------------------------------------------------------------- */
+
+.input,
+.textarea,
+.select select {
+  border-color: var(--mc-border);
+  border-radius: var(--mc-radius-sm);
+  color: var(--mc-body-color);
+  box-shadow: none;
+  font-family: var(--mc-font-body);
+  transition: border-color var(--mc-transition), box-shadow var(--mc-transition);
+}
+
+.input:focus,
+.input.is-focused,
+.input:active,
+.input.is-active,
+.textarea:focus,
+.textarea.is-focused,
+.select select:focus,
+.select select.is-focused {
+  border-color: var(--mc-primary);
+  box-shadow: 0 0 0 0.15rem var(--mc-primary-tint);
+}
+
+.select.is-rounded {
+  & select {
+    border-radius: 9999px;
+    border-color: var(--mc-border);
+
+    &:focus {
+      border-color: var(--mc-primary);
+      box-shadow: 0 0 0 0.15rem var(--mc-primary-tint);
+    }
+  }
+
+  &:has(input) {
+    width: auto;
+  }
+
+  & input.input {
+    padding-right: 0.75rem;
+    border-radius: 9999px;
+  }
+}
+
+.label {
+  font-family: var(--mc-font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mc-body-tertiary);
+}
+
+.field.is-grouped {
+  & > .control:not(:last-child) {
+    margin-right: 0.5rem;
+  }
+
+  /* Clear button in filter row — stretch to match sibling height, push button up to input line */
+  & > .control.is-align-self-flex-end {
+    align-self: stretch !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 0.375rem;
+  }
+}
+
+/* -- Filter section ------------------------------------------------------- */
+/* Wrap the filter area in a subtle card-like container */
+
+.filter {
+  background-color: #fff;
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius);
+  padding: 0.5rem 1rem;
+  box-shadow: var(--mc-panel-shadow);
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+
+  & .label {
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+  }
+
+  & .input {
+    font-size: 0.85rem;
+  }
+
+  /* Filter "Clear" link — pill button treatment matching app's filter reset */
+  & > a,
+  & > .control > a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35em 0.85em;
+    background-color: var(--mc-neutral-bg);
+    border: 1px solid var(--mc-neutral-border);
+    border-radius: var(--mc-radius-sm);
+    color: var(--mc-body-secondary);
+    font-family: var(--mc-font-heading);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all var(--mc-transition);
+    align-self: flex-end;
+  }
+
+  & > a:hover,
+  & > .control > a:hover {
+    background-color: var(--mc-neutral-hover);
+    color: var(--mc-body-color);
+    text-decoration: none;
+  }
+}
+
+/* Hide Bulma's select chevron on all <input> elements inside .select wrappers.
+   MC wraps text_field and datetime_field in .select.is-rounded, but the ::after
+   chevron is meant for actual <select> — inputs have their own native indicators. */
+.select.is-rounded:has(input)::after,
+.select:not(.is-multiple):not(.is-loading):has(input)::after {
+  display: none !important;
+}
+
+/* Hide native datalist dropdown arrow (WebKit/Chromium/Safari) */
+input[list]::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+
+input[list]::-webkit-list-button {
+  display: none !important;
+}
+
+/* -- Level layout (toolbar + filter row) ---------------------------------- */
+
+.level {
+  margin-bottom: 1rem;
+
+  & .title {
+    margin-bottom: 0;
+  }
+}
+
+/* Level inside page title — inline layout so hostname badge sits next to title text */
+h1.title > .level {
+  margin-bottom: 0 !important;
+  justify-content: flex-start;
+  gap: 0.75rem;
+
+  /* Action buttons in title row (Discard / Retry on failed job page) */
+  & > .level-right .buttons {
+    gap: 0.25rem;
+    margin-left: 0.5rem;
+  }
+}
+
+/* Toolbar: job count text */
+.buttons.is-right .mr-5 {
+  font-family: var(--mc-font-heading);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--mc-body-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* -- Cards / Panels / Boxes ----------------------------------------------- */
+
+.box {
+  box-shadow: var(--mc-panel-shadow);
+  border: 0;
+  border-radius: var(--mc-radius);
+  background-color: #fff;
+}
+
+/* -- Messages (flash alerts) ---------------------------------------------- */
+
+.message {
+  border: 0;
+  border-left: 4px solid;
+  border-radius: var(--mc-radius);
+  background-color: transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  & .message-body {
+    border: 0;
+    border-radius: 0;
+    color: var(--mc-body-color);
+    padding: 0.75rem 1rem;
+  }
+
+  &.is-success { --msg-accent: var(--mc-primary); --msg-bg: rgba(19, 121, 91, 0.08); --msg-text: var(--mc-primary-hover); }
+  &.is-danger  { --msg-accent: var(--mc-danger);  --msg-bg: var(--mc-danger-tint);  --msg-text: var(--mc-danger-dark); }
+  &.is-warning { --msg-accent: var(--mc-gold);    --msg-bg: var(--mc-gold-tint);       --msg-text: var(--mc-gold-dark); }
+  &.is-info    { --msg-accent: var(--mc-iris);    --msg-bg: rgba(106, 95, 160, 0.08);  --msg-text: var(--mc-iris-dark); }
+
+  &:is(.is-success, .is-danger, .is-warning, .is-info) {
+    border-left-color: var(--msg-accent);
+
+    & .message-header {
+      background-color: var(--msg-accent);
+      color: #fff;
+    }
+
+    & .message-body {
+      background-color: var(--msg-bg);
+      color: var(--msg-text);
+    }
+  }
+}
+
+/* Pagination toolbar (custom MC navigation with page info) */
+nav.buttons.is-right[role="navigation"] {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--mc-border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  & .mr-3 {
+    font-family: var(--mc-font-heading);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--mc-body-secondary);
+    letter-spacing: 0.04em;
+  }
+
+  /* Pagination links — teal-tinted button style matching app's pagination */
+  & a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35em 0.85em;
+    border: 1px solid var(--mc-border);
+    border-radius: var(--mc-radius-sm);
+    color: var(--mc-body-color);
+    font-family: var(--mc-font-heading);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: all var(--mc-transition);
+
+    &:hover {
+      border-color: var(--mc-primary);
+      color: var(--mc-primary);
+      background-color: var(--mc-light);
+      text-decoration: none;
+      box-shadow: none;
+    }
+
+    /* Disabled pagination links (Previous on page 1, Next on last page) */
+    &[disabled] {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mc-primary-tint);
+      outline-offset: -2px;
+    }
+  }
+}
+
+/* -- Section & container -------------------------------------------------- */
+
+.section {
+  background-color: var(--mc-bg);
+  padding: 1.5rem;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+/* -- Pre / code / backtrace ----------------------------------------------- */
+
+pre,
+code,
+.backtrace {
+  background-color: var(--mc-light);
+  border-radius: var(--mc-radius-sm);
+  font-family: var(--mc-font-mono);
+}
+
+pre {
+  padding: 1rem;
+  font-size: 0.82rem;
+  color: var(--mc-body-color);
+  line-height: 1.7;
+  overflow-x: auto;
+  box-shadow: var(--mc-panel-shadow);
+  border: 1px solid var(--mc-border);
+
+  & code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+}
+
+code {
+  color: var(--mc-primary);
+  font-size: 0.875em;
+  padding: 0.125em 0.375em;
+  background-color: var(--mc-light);
+  border-radius: 0.25rem;
+}
+
+/* Backtrace content — match the app's code block style */
+.backtrace-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* -- Empty state notices -------------------------------------------------- */
+/* Style the "no jobs found" / "worker is idle" messages */
+
+.section > .container > p:only-child,
+.section > .container > p:last-child:not(:first-child) {
+  text-align: center;
+  color: var(--mc-body-tertiary);
+  font-size: 1.1rem;
+  padding: 1.25rem 1rem;
+  margin-top: 0 !important;
+}
+
+/* Empty datagrid tables — placeholder when the whole table has no data rows.
+   Scoped to table:not(:has(tbody tr)) so stray empty <tbody> elements in
+   tables that DO have data (e.g. Queues) are left alone. */
+:is(table.jobs, table.queues, table.workers, table.recurring-tasks):not(:has(tbody tr)) tbody:not(:has(tr)) {
+  display: table-caption;
+  caption-side: bottom;
+
+  &::after {
+    content: "No items to display";
+    display: block;
+    text-align: center;
+    padding: 1.25rem 1rem;
+    color: var(--mc-body-tertiary);
+    font-size: 0.95rem;
+    font-family: var(--mc-font-body);
+  }
+}
+
+/* -- Bulma helper overrides ----------------------------------------------- */
+
+.has-text-grey {
+  color: var(--mc-body-secondary) !important;
+}
+
+.has-text-danger {
+  color: var(--mc-danger-dark) !important;
+}
+
+.has-text-success,
+.has-text-primary,
+.has-text-link {
+  color: var(--mc-primary) !important;
+}
+
+.has-text-info {
+  color: var(--mc-iris) !important;
+}
+
+.has-text-warning {
+  color: var(--mc-gold) !important;
+}
+
+.has-background-primary,
+.has-background-success {
+  background-color: var(--mc-primary) !important;
+}
+
+.has-background-danger {
+  background-color: var(--mc-danger) !important;
+}
+
+.has-background-warning {
+  background-color: var(--mc-gold) !important;
+}
+
+.has-background-info {
+  background-color: var(--mc-iris) !important;
+}
+
+.has-background-light {
+  background-color: var(--mc-light) !important;
+}
+
+/* Bulma size helper — ensure it uses our font */
+.is-size-7 {
+  font-size: 0.75rem !important;
+}
+
+/* -- Selection / highlight ------------------------------------------------ */
+
+::selection {
+  background-color: var(--mc-primary-tint);
+  color: var(--mc-primary-hover);
+}
+
+/* Inverted selection for dark surfaces */
+:is(table.jobs, table.queues, table.workers, table.recurring-tasks) > thead,
+.tabs:not(.is-toggle) li.is-active a {
+  &::selection, & *::selection {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+  }
+}
+
+/* -- Focus-visible — keyboard accessibility for all interactive elements -- */
+
+a:focus-visible {
+  outline: 2px solid var(--mc-primary-ring);
+  outline-offset: 2px;
+  border-radius: var(--mc-radius-sm);
+}
+
+.pagination-link:focus-visible,
+.pagination-previous:focus-visible,
+.pagination-next:focus-visible,
+.select select:focus-visible {
+  outline: 2px solid var(--mc-primary-tint);
+  outline-offset: -2px;
+  border-radius: var(--mc-radius-sm);
+}
+
+/* -- Scrollbar styling ---------------------------------------------------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* -- Horizontal rules ----------------------------------------------------- */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--mc-border);
+  margin: 1.5rem 0;
+}
+
+/* -- Worker detail — hostname badge --------------------------------------- */
+/* h1.title > .level > .level-right.is-family-monospace */
+
+h1.title .level-right.is-family-monospace {
+  font-family: var(--mc-font-mono) !important;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--mc-iris);
+  padding: 0.4em 0.85em;
+  border-radius: var(--mc-radius-sm);
+  border: 1px solid var(--mc-iris);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  align-self: center;
+}
+
+/* -- Idle worker / empty state between separators ------------------------- */
+/* "This worker is idle" — .has-text-centered.is-size-3.has-text-grey */
+
+.has-text-centered.is-size-3 {
+  font-size: 1.1rem !important;
+  font-family: var(--mc-font-body);
+  color: var(--mc-body-tertiary) !important;
+  padding: 1.25rem 1rem;
+  margin-top: 0 !important;
+  letter-spacing: 0.02em;
+}
+
+/* -- Responsive refinements ----------------------------------------------- */
+
+@media screen and (max-width: 768px) {
+  .section {
+    padding: 1rem 0.75rem;
+  }
+
+  .filter {
+    padding: 0.5rem 0.75rem;
+
+    & .field.is-grouped {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+
+      & > .control:not(:last-child) {
+        margin-right: 0;
+      }
+    }
+  }
+
+  h1.title {
+    font-size: 1.25rem;
+  }
+
+  .level {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .buttons.is-right {
+    justify-content: flex-start;
+  }
+
+  nav.buttons.is-right[role="navigation"] {
+    justify-content: center;
+  }
+}

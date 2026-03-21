@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+MissionControl::Jobs::Theme.configure do |config|
+  # Mount path for MissionControl::Jobs::Engine (auto-discovered by default)
+  # config.mount_path = "/jobs"
+
+  # PrismJS syntax highlighting for JSON blocks on detail pages
+  # config.syntax_highlighting = true
+end

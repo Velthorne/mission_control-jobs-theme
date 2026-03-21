@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+# Specify your gem's dependencies in mission_control-jobs-theme.gemspec
+gemspec
+
+gem "irb"
+gem "rake"
+
+gem "rspec"
+gem "simplecov"
+
+gem "rubocop"
+gem "rubocop-performance"
+gem "rubocop-rspec"
