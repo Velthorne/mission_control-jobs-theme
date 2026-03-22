@@ -18,13 +18,10 @@ module MissionControl
           config = MissionControl::Jobs::Theme.configuration
           mount_path = config.mount_path || RouteDiscovery.discover(app.routes)
 
-          gem_root = File.expand_path("../../../../..", __dir__)
-          cache_headers = [[:all, { "cache-control" => "public, max-age=31536000, immutable" }]]
-
           app.middleware.use Rack::Static,
                              urls: %w[/mission_control/css /mission_control/js /mission_control/fonts],
-                             root: File.join(gem_root, "assets"),
-                             header_rules: cache_headers
+                             root: File.join(Gem.loaded_specs["mission_control-jobs-theme"].gem_dir, "assets"),
+                             header_rules: [[:all, { "cache-control" => "public, max-age=31536000, immutable" }]]
 
           app.middleware.use MissionControl::Jobs::Theme::Middleware,
                              mount_path:,
