@@ -4,7 +4,7 @@
 [![Gem Version](https://badge.fury.io/rb/mission_control-jobs-theme.svg)](https://badge.fury.io/rb/mission_control-jobs-theme)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-[MissionControl::Jobs](https://github.com/rails/mission_control-jobs) is a mature, well-maintained dashboard for managing background jobs in Rails — but its default UI is purely functional with little visual polish. Rather than building a custom tool from scratch or overriding MissionControl views (which would break or fall behind with every upstream release), this gem takes a CSS-only approach: it injects a custom stylesheet and optional syntax highlighting into MissionControl's HTML responses via Rack middleware. The result is a refreshed emerald-toned UI with refined typography (Archivo Narrow, Albert Sans) that stays fully functional even if upstream markup changes.
+A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/mission_control-jobs) — emerald color palette, refined typography, and JSON syntax highlighting. No view overrides, no asset pipeline dependency — just Rack middleware that injects a stylesheet into HTML responses.
 
 ## Screenshots
 
@@ -23,7 +23,7 @@
 - Rails **8.1+**
 - [mission_control-jobs](https://github.com/rails/mission_control-jobs) **>= 1.1**
 
-> **Note:** The theme is likely compatible with lower versions of Ruby and Rails, but this hasn't been verified yet. Requirements will be relaxed once testing across additional versions is complete.
+> **Note:** Tested with Ruby 3.4, Rails 8.1, and mission_control-jobs 1.1. Earlier versions may work but are not part of the test matrix yet.
 
 ## Installation
 
@@ -40,6 +40,10 @@ bundle install
 ```
 
 The theme is active immediately — no configuration required.
+
+## How it works
+
+The gem inserts Rack middleware that intercepts HTML responses from the MissionControl::Jobs engine and injects a custom stylesheet (plus optional [PrismJS](https://prismjs.com) syntax highlighting) before `</head>`. Assets are served via `Rack::Static` independently of the host app's asset pipeline — no Propshaft or Sprockets integration required. The CSS overrides Bulma variables and component styles, so the theme stays functional even if upstream markup changes.
 
 ## Configuration
 
@@ -88,6 +92,10 @@ end
    mount MissionControl::Jobs::Engine, at: "/jobs"
    ```
 
+### Apps served under a sub-URI
+
+If your Rails app is deployed under a prefix such as `/internal`, the `/mission_control/...` asset URLs injected by the middleware will not include the prefix. Sub-URI support is not yet available.
+
 ### Stale assets after upgrade
 
 Theme assets are served with immutable cache headers (1-year max-age). After upgrading the gem, browsers may serve stale files. Hard-refresh (`Ctrl+Shift+R`) or clear the browser cache.
@@ -98,7 +106,7 @@ Contributions of any kind are appreciated — whether it's a bug report, feature
 
 ```bash
 bin/setup                 # Install dependencies
-bundle exec rake spec     # Run the test suite
+bundle exec rspec         # Run the test suite
 bin/console               # Interactive prompt
 ```
 

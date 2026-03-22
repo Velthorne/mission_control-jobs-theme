@@ -8,15 +8,16 @@ Gem::Specification.new do |spec|
   spec.authors = ["Łukasz Tackowiak"]
   spec.email = ["contact@velthorne.dev"]
 
-  spec.summary = "Emerald theme for mission_control-jobs"
-  spec.description = "CSS reskin and PrismJS syntax highlighting for the MissionControl Jobs UI. " \
-                     "Drop-in Rack middleware with zero-config Rails integration via Railtie."
+  spec.summary = "A polished visual theme for the mission_control-jobs dashboard"
+  spec.description = "Drop-in theme that refreshes the MissionControl::Jobs UI with refined " \
+                     "typography, an emerald color palette, and JSON syntax highlighting. " \
+                     "Zero configuration — works via Rack middleware without overriding views."
   spec.homepage = "https://github.com/Velthorne/mission_control-jobs-theme"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.4"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "#{spec.homepage}/tree/main"
+  spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
   spec.metadata["documentation_uri"] = "#{spec.homepage}/blob/main/README.md"
@@ -27,7 +28,8 @@ Gem::Specification.new do |spec|
     IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
       ls.readlines("\x0", chomp: true).reject do |f|
         (f == gemspec) ||
-          f.start_with?(*%w[bin/ test/ spec/ features/ docs/ .git .rspec .rubocop appveyor Gemfile Rakefile])
+          f.start_with?(*%w[bin/ test/ spec/ features/ docs/ .git .rspec .rubocop appveyor Gemfile Rakefile]) ||
+          f == "assets/mission_control/css/theme.css"
       end
     end
   spec.require_paths = ["lib"]
