@@ -107,6 +107,7 @@ Contributions of any kind are appreciated — whether it's a bug report, feature
 ```bash
 bin/setup                 # Install dependencies
 bundle exec rspec         # Run the test suite
+bundle exec rubocop       # Run the linter
 bin/console               # Interactive prompt
 ```
 

@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+## [0.1.2] - 2026-03-22
+
+- Fix `prism-init.js` 404 caused by overlapping `Rack::Static` URL prefixes across two roots
+- Consolidate all assets under `assets/`; remove `vendor/` directory
+
 ## [0.1.1] - 2026-03-22
 
 - README improvements, gemspec metadata fixes, and packaging cleanup

@@ -5,8 +5,8 @@ module MissionControl
     module Theme
       # Wire theme assets and middleware into the Rails middleware stack.
       #
-      # Inserts {Rack::Static} to serve CSS, JS, and font assets with immutable
-      # cache headers, then inserts {Middleware} to inject them into engine HTML
+      # Inserts a {Rack::Static} instance to serve CSS, JS, and font assets with
+      # immutable cache headers, then inserts {Middleware} to inject them into engine HTML
       # responses. The engine mount path is resolved via {RouteDiscovery} unless
       # explicitly configured.
       #
@@ -22,13 +22,8 @@ module MissionControl
           cache_headers = [[:all, { "cache-control" => "public, max-age=31536000, immutable" }]]
 
           app.middleware.use Rack::Static,
-                             urls: %w[/mission_control/css /mission_control/js],
-                             root: File.join(gem_root, "assets"),
-                             header_rules: cache_headers
-
-          app.middleware.use Rack::Static,
                              urls: %w[/mission_control/css /mission_control/js /mission_control/fonts],
-                             root: File.join(gem_root, "vendor/assets"),
+                             root: File.join(gem_root, "assets"),
                              header_rules: cache_headers
 
           app.middleware.use MissionControl::Jobs::Theme::Middleware,
