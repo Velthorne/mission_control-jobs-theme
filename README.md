@@ -4,7 +4,7 @@
 [![Gem Version](https://badge.fury.io/rb/mission_control-jobs-theme.svg)](https://badge.fury.io/rb/mission_control-jobs-theme)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/mission_control-jobs) — emerald color palette, refined typography, and JSON syntax highlighting. No view overrides, no asset pipeline dependency — just Rack middleware that injects a stylesheet into HTML responses.
+A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/mission_control-jobs) — malachite color palette, refined typography, and JSON syntax highlighting. No view overrides, no asset pipeline dependency — just Rack middleware that injects a stylesheet into HTML responses.
 
 ## Screenshots
 

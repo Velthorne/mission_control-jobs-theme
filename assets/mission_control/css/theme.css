@@ -1,5 +1,5 @@
 /*!
- * MissionControl Jobs — Emerald Theme
+ * MissionControl Jobs — Malachite Light Theme
  * A polished, opinionated reskin for mission_control-jobs (Bulma-based).
  * Replaces the default UI with refined typography, structured design tokens,
  * and cohesive component styling for improved readability and visual clarity.
@@ -27,19 +27,17 @@
 :root {
   --mc-primary: #13795b;
   --mc-primary-hover: #0f6349;
-  --mc-primary-dark: #0b5a42;
   --mc-primary-subtle: rgba(19, 121, 91, 0.05);
   --mc-primary-tint: rgba(19, 121, 91, 0.12);
   --mc-primary-ring: rgba(19, 121, 91, 0.4);
-  --mc-dark: #1F3D2A;
-  --mc-dark-lighter: #2a5038;
+  --mc-primary-border: rgba(19, 121, 91, 0.15);
   --mc-light: #f0f7f4;
   --mc-bg: #f8f9fa;
   --mc-gold: #a8893a;
   --mc-gold-dark: #7a6520;
   --mc-gold-hover: #8f7530;
   --mc-gold-muted: rgba(122, 101, 32, 0.5);
-  --mc-gold-tint: rgba(168, 137, 58, 0.08);
+  --mc-gold-tint: rgba(168, 137, 58, 0.1);
   --mc-gold-border: rgba(168, 137, 58, 0.25);
   --mc-iris: #6A5FA0;
   --mc-iris-dark: #5a5090;
@@ -60,9 +58,10 @@
   --mc-font-body: 'Albert Sans', sans-serif;
   --mc-font-heading: 'Archivo Narrow', sans-serif;
   --mc-font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, monospace;
-  --mc-panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --mc-radius: 0.5rem;
-  --mc-radius-sm: 0.375rem;
+  --mc-panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 6px 20px rgba(0, 0, 0, 0.06);
+  --mc-radius: 1.25rem;
+  --mc-radius-md: 0.75rem;
+  --mc-radius-sm: 0.55rem;
   --mc-transition: 0.15s ease;
 }
 
@@ -108,15 +107,11 @@ h1.title {
 /* Section subtitle (h2.subtitle) — card header of a unified panel.
    The subtitle + following content (pre, table, box) form a single visual card. */
 h2.subtitle {
-  font-family: var(--mc-font-heading);
   font-size: 0.875rem;
-  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--mc-primary);
   background-color: var(--mc-light);
-  border: 1px solid var(--mc-border);
-  border-bottom: 1px solid var(--mc-primary-subtle);
+  border: 1px solid var(--mc-primary-border);
   border-radius: var(--mc-radius) var(--mc-radius) 0 0;
   box-shadow: var(--mc-panel-shadow);
   padding: 0.6rem 1rem;
@@ -132,7 +127,7 @@ h2.subtitle {
     border-top: none !important;
     margin-top: 0 !important;
     box-shadow: var(--mc-panel-shadow);
-    border: 1px solid var(--mc-border);
+    border: 1px solid var(--mc-primary-border);
     border-top: none;
   }
 
@@ -145,9 +140,9 @@ h2.subtitle {
   /* Pre blocks as card body — adjust for unified card look */
   & + pre {
     background-color: #fff;
-    border-left: 1px solid var(--mc-border);
-    border-right: 1px solid var(--mc-border);
-    border-bottom: 1px solid var(--mc-border);
+    border-left: 1px solid var(--mc-primary-border);
+    border-right: 1px solid var(--mc-primary-border);
+    border-bottom: 1px solid var(--mc-primary-border);
   }
 }
 
@@ -170,164 +165,207 @@ a {
 
   &:hover {
     color: var(--mc-primary-hover);
-    text-decoration: underline;
-    text-underline-offset: 0.375em;
   }
 }
 
 /* -- Navbar (gold breadcrumb bar — matches app's wayfinding pattern) ------ */
+/* Forces desktop (single-line) layout at all widths — the MC navbar content
+   (back link, server toggle, app selector) is compact enough to never need
+   Bulma's mobile collapse. */
 
 .navbar {
   background: var(--mc-gold-tint);
-  border-radius: var(--mc-radius);
+  border-radius: 1rem;
   margin-bottom: 1rem;
   min-height: auto;
-  box-shadow: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(168, 137, 58, 0.2);
   padding: 0;
-
-  /* Override Bulma's mb-4 on .navbar-menu.is-active inside the breadcrumb bar */
-  & .navbar-menu.mb-4 {
-    margin-bottom: 0 !important;
-  }
-}
-
-.navbar-menu {
-  background-color: transparent;
-  box-shadow: none;
-  padding: 0.5rem 0.75rem;
   display: flex;
-  align-items: center;
-}
+  align-items: stretch;
 
-/* All items within the breadcrumb bar — gold-tinted label-tier */
-.navbar-item,
-.navbar-link {
-  font-family: var(--mc-font-heading);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--mc-gold-muted);
-  padding: 0.4rem 0.65rem;
-  transition: color var(--mc-transition);
-  border-radius: var(--mc-radius-sm);
+  /* -- Menu container -- */
 
-  &:hover,
-  &:focus {
-    color: var(--mc-gold-dark);
+  & .navbar-menu {
     background-color: transparent;
-    text-decoration: none;
+    box-shadow: none;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    flex-shrink: 0;
+
+    &.mb-4 { margin-bottom: 0 !important; }
+    &.is-active { display: flex; }
   }
 
-  &.is-active {
-    color: var(--mc-gold-dark);
-    background-color: transparent;
-  }
-}
+  /* -- All items + links — gold-tinted label-tier -- */
 
-/* "Back to main app" — the primary breadcrumb link with left arrow */
-.navbar-start a {
-  font-family: var(--mc-font-heading);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--mc-gold-muted);
-  padding: 0.4rem 0.65rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: color var(--mc-transition);
-  line-height: 1.4;
-
-  &:hover {
-    color: var(--mc-gold-dark);
-    text-decoration: none;
-  }
-
-  &::before {
-    content: "\2039";
-    font-size: 1.3rem;
-    font-weight: 300;
-    line-height: 1;
-  }
-}
-
-/* Navbar end items (server/app selectors) */
-.navbar-start .navbar-item,
-.navbar-end .navbar-item {
-  color: var(--mc-gold-muted);
-
-  &:hover {
-    color: var(--mc-gold-dark);
-    background-color: transparent;
-  }
-}
-
-/* Dropdown — gold-tinted card for multi-app selector */
-.navbar-dropdown {
-  background-color: #fff;
-  border-top: 2px solid var(--mc-gold);
-  border-radius: 0 0 var(--mc-radius) var(--mc-radius);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  padding: 0.25rem;
-
-  & .navbar-item {
-    color: var(--mc-body-color);
+  & .navbar-item,
+  & .navbar-link {
+    font-family: var(--mc-font-heading);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mc-gold-muted);
+    padding: 0.4rem 0.65rem;
+    transition: color var(--mc-transition);
     border-radius: var(--mc-radius-sm);
-    font-size: 0.85rem;
-    text-transform: none;
-    letter-spacing: normal;
 
     &:hover,
     &:focus {
       color: var(--mc-gold-dark);
-      background-color: var(--mc-gold-tint);
+      background-color: transparent;
+      text-decoration: none;
+    }
+
+    &.is-active {
+      color: var(--mc-gold-dark);
+      background-color: transparent;
     }
   }
-}
 
-.navbar-divider {
-  background-color: var(--mc-border);
-}
+  /* -- Left section — "Back to main app" breadcrumb -- */
 
-.navbar-burger {
-  color: var(--mc-gold-dark);
+  & .navbar-start {
+    display: flex;
+    justify-content: flex-start;
+    margin-right: auto;
+    align-items: center;
 
-  & span {
-    background-color: var(--mc-gold-dark);
+    & a {
+      font-family: var(--mc-font-heading);
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mc-gold-muted);
+      padding: 0.4rem 0.65rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color var(--mc-transition);
+      line-height: 1.4;
+
+      &:hover {
+        color: var(--mc-gold-dark);
+        text-decoration: none;
+      }
+
+      &::before {
+        content: "\2039";
+        font-size: 1.3rem;
+        font-weight: 300;
+        line-height: 1;
+      }
+    }
   }
-}
 
-/* Replace Bulma's border-arrow with a crisp text character */
-.navbar-link {
-  position: relative;
-  padding-right: 1.4rem !important;
+  /* -- Right section — server toggle + app selector -- */
 
-  &::after {
-    display: none !important;
+  & .navbar-end {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: auto;
+    align-items: center;
+
+    & .navbar-item {
+      color: var(--mc-gold-muted);
+
+      &:hover {
+        color: var(--mc-gold-dark);
+        background-color: transparent;
+      }
+    }
   }
 
-  &::before {
-    content: "▾";
+  /* -- App selector — dropdown positioning + hover reveal -- */
+
+  & .navbar-item.has-dropdown {
+    position: relative;
+
+    &:hover > .navbar-dropdown,
+    &.is-active > .navbar-dropdown {
+      display: block;
+    }
+
+    &:hover .navbar-link::before,
+    &.is-active .navbar-link::before {
+      transform: translateY(-50%) rotate(180deg);
+    }
+  }
+
+  /* -- Dropdown — gold-tinted card for multi-app selector -- */
+
+  & .navbar-dropdown {
+    background-color: #fff;
+    border-top: 2px solid var(--mc-gold);
+    border-radius: 0 0 var(--mc-radius-md) var(--mc-radius-md);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 0.25rem;
     position: absolute;
-    right: 0.4rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1rem;
-    color: rgba(122, 101, 32, 0.4);
-    line-height: 1;
-    transition: color var(--mc-transition), transform 0.2s ease;
+    top: 100%;
+    left: 0;
+    min-width: 100%;
+    z-index: 20;
+    display: none;
+
+    & .navbar-item {
+      color: var(--mc-body-color);
+      border-radius: var(--mc-radius-sm);
+      font-size: 0.85rem;
+      text-transform: none;
+      letter-spacing: normal;
+
+      &:hover,
+      &:focus {
+        color: var(--mc-gold-dark);
+        background-color: var(--mc-gold-tint);
+      }
+    }
   }
 
-  &:hover::before {
+  /* -- Navbar link — replace Bulma's arrow with text chevron -- */
+
+  & .navbar-link {
+    position: relative;
+    padding-right: 1.4rem !important;
+
+    &::after {
+      display: none !important;
+    }
+
+    &::before {
+      content: "▾";
+      position: absolute;
+      right: 0.4rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: rgba(122, 101, 32, 0.4);
+      line-height: 1;
+      transition: color var(--mc-transition), transform 0.2s ease;
+    }
+
+    &:hover::before {
+      color: var(--mc-gold-dark);
+    }
+  }
+
+  /* -- Misc -- */
+
+  & .navbar-divider {
+    background-color: var(--mc-border);
+  }
+
+  & .navbar-burger {
     color: var(--mc-gold-dark);
-  }
-}
 
-/* Dropdown chevron rotation */
-.navbar-item.has-dropdown.is-active .navbar-link::before {
-  transform: translateY(-50%) rotate(180deg);
+    & span {
+      background-color: var(--mc-gold-dark);
+    }
+  }
 }
 
 /* -- Tabs (segmented control — connected pill segments) ------------------- */
@@ -353,13 +391,14 @@ a {
       font-size: 0.8rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 0.45rem 0.85rem;
+      padding: 0.55rem 1rem;
+      min-height: 2.7rem;
       transition: all var(--mc-transition);
       margin-bottom: 0;
 
       &:hover {
         color: var(--mc-primary);
-        background-color: var(--mc-primary-subtle) !important;
+        background-color: var(--mc-light) !important;
         text-decoration: none;
       }
     }
@@ -371,6 +410,11 @@ a {
 
     & li:first-child a {
       border-radius: var(--mc-radius-sm) 0 0 var(--mc-radius-sm) !important;
+    }
+
+    & li:only-child a {
+      border-right-width: 1px !important;
+      border-radius: var(--mc-radius-sm) !important;
     }
 
     & li.is-active a {
@@ -570,12 +614,12 @@ a {
     cursor: default;
 
     &:hover {
-      background-color: var(--mc-primary-subtle);
+      background-color: rgba(19, 121, 91, 0.08);
     }
 
     /* Zebra striping — teal-tinted to match the app's datagrid */
     &:nth-child(even):not(:hover) {
-      background-color: rgba(19, 121, 91, 0.03);
+      background-color: rgba(19, 121, 91, 0.04);
     }
   }
 }
@@ -705,20 +749,25 @@ h2.subtitle:has(+ .table:not(:is(.jobs, .queues, .workers, .recurring-tasks))) {
 /* -- Tags / Badges -------------------------------------------------------- */
 
 .tag {
-  border-radius: 0.3rem;
+  border-radius: 1rem;
+  font-family: var(--mc-font-heading);
   font-weight: 600;
   letter-spacing: 0.02em;
-  font-size: 0.75rem;
-  line-height: 1.4;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  padding: 0.35em 0.75em;
 
   &.is-warning {
     background-color: rgba(168, 137, 58, 0.15);
     color: var(--mc-gold-dark);
+    border: 1px solid rgba(168, 137, 58, 0.2);
   }
 
   &.is-danger {
     background-color: var(--mc-danger-tint);
     color: var(--mc-danger-dark);
+    border: 1px solid rgba(220, 53, 69, 0.2);
   }
 
   &.is-success,
@@ -726,22 +775,26 @@ h2.subtitle:has(+ .table:not(:is(.jobs, .queues, .workers, .recurring-tasks))) {
   &.is-link {
     background-color: var(--mc-primary-tint);
     color: var(--mc-primary);
+    border: 1px solid rgba(19, 121, 91, 0.2);
   }
 
   &.is-info {
     background-color: var(--mc-iris-tint);
     color: var(--mc-iris);
+    border: 1px solid rgba(106, 95, 160, 0.2);
   }
 
   &.is-light {
     background-color: var(--mc-light);
     color: var(--mc-body-color);
+    border: 1px solid rgba(173, 181, 189, 0.2);
   }
 
   /* Plain .tag (queue link on job show) — subtle teal tint */
   &:not([class*="is-"]) {
     background-color: var(--mc-light);
     color: var(--mc-primary);
+    border: 1px solid rgba(19, 121, 91, 0.2);
 
     & a {
       color: var(--mc-primary);
@@ -755,7 +808,7 @@ h1.title .tag {
   font-size: 0.78rem;
   font-weight: 600;
   padding: 0.4em 0.85em;
-  border-radius: var(--mc-radius-sm);
+  border-radius: 1rem;
   margin-left: 0.25rem !important;
   align-self: center;
   letter-spacing: 0.01em;
@@ -788,15 +841,14 @@ h1.title .tag {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  border-radius: var(--mc-radius-sm);
-  transition: background-color var(--mc-transition), box-shadow var(--mc-transition), color var(--mc-transition), border-color var(--mc-transition);
+  border-radius: 0.375rem;
+  box-shadow: none;
+  transition: background-color var(--mc-transition), color var(--mc-transition), border-color var(--mc-transition);
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
 
   &:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     text-decoration: none;
   }
 
@@ -806,13 +858,7 @@ h1.title .tag {
   }
 
   &[disabled] {
-    opacity: 0.5;
     cursor: not-allowed;
-    box-shadow: none;
-
-    &:hover {
-      box-shadow: none;
-    }
   }
 
   &.is-primary,
@@ -822,18 +868,19 @@ h1.title .tag {
     background-color: var(--mc-primary);
     border-color: var(--mc-primary);
     color: #fff;
-  }
 
-  &.is-primary:hover,
-  &.is-primary:focus-visible,
-  &.is-link:hover,
-  &.is-link:focus-visible,
-  &.is-success:hover,
-  &.is-success:focus-visible,
-  &.is-success.is-light:hover {
-    background-color: var(--mc-primary-hover);
-    border-color: var(--mc-primary-hover);
-    color: #fff;
+    &:hover,
+    &:focus-visible {
+      background-color: var(--mc-primary-hover);
+      border-color: var(--mc-primary-hover);
+      color: #fff;
+    }
+
+    &[disabled] {
+      background-color: rgba(19, 121, 91, 0.45);
+      color: #fff;
+      border-color: rgba(19, 121, 91, 0.3);
+    }
   }
 
   /* Danger button — tint-to-solid escalation on hover (matches admin) */
@@ -849,17 +896,21 @@ h1.title .tag {
       border-color: var(--mc-danger-hover);
     }
 
+    &[disabled] {
+      background-color: rgba(220, 53, 69, 0.06);
+      color: rgba(167, 29, 42, 0.4);
+      border-color: rgba(220, 53, 69, 0.12);
+    }
+
     &.is-light {
       background-color: var(--mc-danger-tint);
       color: var(--mc-danger-dark);
       border-color: rgba(220, 53, 69, 0.18);
-      box-shadow: none;
 
       &:hover {
         background-color: var(--mc-danger-hover);
         color: #fff;
         border-color: var(--mc-danger-hover);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       }
     }
   }
@@ -875,6 +926,12 @@ h1.title .tag {
       border-color: var(--mc-iris-dark);
       color: #fff;
     }
+
+    &[disabled] {
+      background-color: rgba(106, 95, 160, 0.45);
+      color: #fff;
+      border-color: rgba(106, 95, 160, 0.3);
+    }
   }
 
   /* Warning button — solid gold (matches admin btn-warning).
@@ -884,14 +941,19 @@ h1.title .tag {
     background-color: var(--mc-gold);
     border-color: var(--mc-gold);
     color: #fff;
-  }
 
-  &.is-warning:hover,
-  &.is-warning:focus-visible,
-  &.is-warning.is-light:hover {
-    background-color: var(--mc-gold-hover);
-    border-color: var(--mc-gold-hover);
-    color: #fff;
+    &:hover,
+    &:focus-visible {
+      background-color: var(--mc-gold-hover);
+      border-color: var(--mc-gold-hover);
+      color: #fff;
+    }
+
+    &[disabled] {
+      background-color: rgba(168, 137, 58, 0.45);
+      color: #fff;
+      border-color: rgba(168, 137, 58, 0.3);
+    }
   }
 
   /* Light button + plain button — neutral secondary (matches admin btn-secondary) */
@@ -900,18 +962,18 @@ h1.title .tag {
     background-color: var(--mc-neutral-bg);
     border-color: var(--mc-neutral-border);
     color: var(--mc-body-secondary);
-    box-shadow: none;
-  }
 
-  &.is-light:hover {
-    background-color: var(--mc-neutral-hover);
-    color: var(--mc-body-color);
-    border-color: var(--mc-neutral-border);
-  }
+    &:hover {
+      background-color: var(--mc-neutral-hover);
+      color: var(--mc-body-color);
+      border-color: var(--mc-neutral-border);
+    }
 
-  &:not([class*="is-"]):hover {
-    background-color: var(--mc-neutral-hover);
-    color: var(--mc-body-color);
+    &[disabled] {
+      background-color: rgba(173, 181, 189, 0.06);
+      color: rgba(108, 117, 125, 0.4);
+      border-color: rgba(173, 181, 189, 0.14);
+    }
   }
 }
 
@@ -938,8 +1000,8 @@ table.jobs td .buttons {
 .input,
 .textarea,
 .select select {
-  border-color: var(--mc-border);
-  border-radius: var(--mc-radius-sm);
+  border-color: #d1d8de;
+  border-radius: 0.7rem;
   color: var(--mc-body-color);
   box-shadow: none;
   font-family: var(--mc-font-body);
@@ -961,7 +1023,7 @@ table.jobs td .buttons {
 .select.is-rounded {
   & select {
     border-radius: 9999px;
-    border-color: var(--mc-border);
+    border-color: #d1d8de;
 
     &:focus {
       border-color: var(--mc-primary);
@@ -1114,11 +1176,10 @@ h1.title > .level {
 /* -- Messages (flash alerts) ---------------------------------------------- */
 
 .message {
-  border: 0;
+  border: 1px solid;
   border-left: 4px solid;
-  border-radius: var(--mc-radius);
+  border-radius: var(--mc-radius-md);
   background-color: transparent;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
   & .message-body {
     border: 0;
@@ -1127,12 +1188,13 @@ h1.title > .level {
     padding: 0.75rem 1rem;
   }
 
-  &.is-success { --msg-accent: var(--mc-primary); --msg-bg: rgba(19, 121, 91, 0.08); --msg-text: var(--mc-primary-hover); }
-  &.is-danger  { --msg-accent: var(--mc-danger);  --msg-bg: var(--mc-danger-tint);  --msg-text: var(--mc-danger-dark); }
-  &.is-warning { --msg-accent: var(--mc-gold);    --msg-bg: var(--mc-gold-tint);       --msg-text: var(--mc-gold-dark); }
-  &.is-info    { --msg-accent: var(--mc-iris);    --msg-bg: rgba(106, 95, 160, 0.08);  --msg-text: var(--mc-iris-dark); }
+  &.is-success { --msg-accent: var(--mc-primary); --msg-bg: rgba(19, 121, 91, 0.08); --msg-text: var(--mc-primary-hover); --msg-border: rgba(19, 121, 91, 0.4); }
+  &.is-danger  { --msg-accent: var(--mc-danger);  --msg-bg: var(--mc-danger-tint);    --msg-text: var(--mc-danger-dark);   --msg-border: rgba(220, 53, 69, 0.4); }
+  &.is-warning { --msg-accent: var(--mc-gold);    --msg-bg: var(--mc-gold-tint);      --msg-text: var(--mc-gold-dark);     --msg-border: rgba(168, 137, 58, 0.4); }
+  &.is-info    { --msg-accent: var(--mc-iris);    --msg-bg: rgba(106, 95, 160, 0.08); --msg-text: var(--mc-iris-dark);     --msg-border: rgba(106, 95, 160, 0.4); }
 
   &:is(.is-success, .is-danger, .is-warning, .is-info) {
+    border-color: var(--msg-border);
     border-left-color: var(--msg-accent);
 
     & .message-header {
@@ -1147,6 +1209,11 @@ h1.title > .level {
   }
 }
 
+/* Hide pagination when only one page (both prev+next disabled) */
+nav.buttons.is-right[role="navigation"]:has(.pagination-previous[disabled]):has(.pagination-next[disabled]) {
+  display: none;
+}
+
 /* Pagination toolbar (custom MC navigation with page info) */
 nav.buttons.is-right[role="navigation"] {
   margin-top: 1rem;
@@ -1155,48 +1222,78 @@ nav.buttons.is-right[role="navigation"] {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 0.5rem;
 
+  /* Page position indicator — primary pill badge, visually centered */
   & .mr-3 {
-    font-family: var(--mc-font-heading);
+    order: 2;
+    font-family: var(--mc-font-mono);
     font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--mc-body-secondary);
+    font-size: 0.8rem;
+    color: #fff;
     letter-spacing: 0.04em;
+    background-color: var(--mc-primary);
+    border: 1px solid var(--mc-primary);
+    border-radius: 1rem;
+    padding: 0.3em 0.85em;
+    margin-right: 0 !important;
   }
 
-  /* Pagination links — teal-tinted button style matching app's pagination */
+  & .pagination-previous { order: 1; }
+  & .pagination-next { order: 3; }
+
+  /* Pagination links — chip-style controls */
   & a {
     display: inline-flex;
     align-items: center;
-    padding: 0.35em 0.85em;
-    border: 1px solid var(--mc-border);
+    padding: 0.4em 0.9em;
+    border: 1px solid var(--mc-primary-border);
     border-radius: var(--mc-radius-sm);
-    color: var(--mc-body-color);
+    background-color: rgba(19, 121, 91, 0.04);
+    color: var(--mc-primary);
     font-family: var(--mc-font-heading);
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     letter-spacing: 0.04em;
     text-decoration: none;
     transition: all var(--mc-transition);
 
     &:hover {
       border-color: var(--mc-primary);
-      color: var(--mc-primary);
-      background-color: var(--mc-light);
+      color: #fff;
+      background-color: var(--mc-primary);
       text-decoration: none;
       box-shadow: none;
     }
 
     /* Disabled pagination links (Previous on page 1, Next on last page) */
     &[disabled] {
-      opacity: 0.4;
+      opacity: 0.35;
       pointer-events: none;
+      background-color: transparent;
+      border-color: var(--mc-border);
+      color: var(--mc-body-secondary);
     }
 
     &:focus-visible {
       outline: 2px solid var(--mc-primary-tint);
       outline-offset: -2px;
     }
+  }
+
+  /* Chevron arrows */
+  & .pagination-previous::before {
+    content: "‹";
+    margin-right: 0.4em;
+    font-size: 1.1em;
+    line-height: 1;
+  }
+
+  & .pagination-next::after {
+    content: "›";
+    margin-left: 0.4em;
+    font-size: 1.1em;
+    line-height: 1;
   }
 }
 
@@ -1224,11 +1321,11 @@ code,
 pre {
   padding: 1rem;
   font-size: 0.82rem;
-  color: var(--mc-body-color);
+  color: var(--mc-primary);
   line-height: 1.7;
   overflow-x: auto;
-  box-shadow: var(--mc-panel-shadow);
-  border: 1px solid var(--mc-border);
+  border: 1px solid rgba(19, 121, 91, 0.3);
+  border-radius: var(--mc-radius-md);
 
   & code {
     background: none;
@@ -1241,8 +1338,7 @@ pre {
 code {
   color: var(--mc-primary);
   font-size: 0.875em;
-  padding: 0.125em 0.375em;
-  background-color: var(--mc-light);
+  padding: 0.2rem 0.4rem;
   border-radius: 0.25rem;
 }
 
@@ -1341,7 +1437,8 @@ code {
 
 /* Inverted selection for dark surfaces */
 :is(table.jobs, table.queues, table.workers, table.recurring-tasks) > thead,
-.tabs:not(.is-toggle) li.is-active a {
+.tabs:not(.is-toggle) li.is-active a,
+nav.buttons.is-right[role="navigation"] .mr-3 {
   &::selection, & *::selection {
     background-color: rgba(255, 255, 255, 0.25);
     color: #fff;
@@ -1408,7 +1505,7 @@ h1.title .level-right.is-family-monospace {
   color: #fff;
   background-color: var(--mc-iris);
   padding: 0.4em 0.85em;
-  border-radius: var(--mc-radius-sm);
+  border-radius: 1rem;
   border: 1px solid var(--mc-iris);
   white-space: nowrap;
   letter-spacing: 0.01em;
