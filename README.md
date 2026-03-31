@@ -19,11 +19,9 @@ A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/missi
 
 ## Requirements
 
-- Ruby **3.4+**
-- Rails **8.1+**
+- Ruby **>= 3.2**
+- Rails **>= 7.1**
 - [mission_control-jobs](https://github.com/rails/mission_control-jobs) **>= 1.1**
-
-> **Note:** Tested with Ruby 3.4, Rails 8.1, and mission_control-jobs 1.1. Earlier versions may work but are not part of the test matrix yet.
 
 ## Installation
 

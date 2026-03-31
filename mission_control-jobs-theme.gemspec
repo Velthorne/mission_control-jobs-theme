@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
                      "Zero configuration — works via Rack middleware without overriding views."
   spec.homepage = "https://github.com/Velthorne/mission_control-jobs-theme"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.4"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
@@ -35,5 +35,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "mission_control-jobs", "~> 1.1"
-  spec.add_dependency "railties", "~> 8.1"
+  spec.add_dependency "railties", ">= 7.1", "< 9"
 end
