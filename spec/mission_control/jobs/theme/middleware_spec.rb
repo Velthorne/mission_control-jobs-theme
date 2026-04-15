@@ -20,11 +20,11 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     status, headers, body = request(app, script_name: "/jobs")
     result = body.join
 
-    expect(result).to include('href="/mission_control/css/prism.min.css"')
+    expect(result).to include('href="/mission_control/css/prism.default.min.css"')
     expect(result).to include(default_theme_css)
     expect(result).to include('src="/mission_control/js/prism.min.js"')
     expect(result).to include('src="/mission_control/js/prism-init.js"')
-    expect(result.index("prism.min.css")).to be < result.index("malachite_light.min.css")
+    expect(result.index("prism.default.min.css")).to be < result.index("malachite_light.min.css")
     expect(headers["content-length"]).to eq(result.bytesize.to_s)
     expect(status).to eq(200)
   end
@@ -110,6 +110,15 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     expect(body.join).to include('href="/mission_control/css/custom_dark.min.css"')
   end
 
+  it "selects prism.tomorrow.min.css for dark themes" do
+    app = build_app(theme: :malachite_dark)
+    _, _, body = request(app, script_name: "/jobs")
+    result = body.join
+
+    expect(result).to include('href="/mission_control/css/prism.tomorrow.min.css"')
+    expect(result).not_to include("prism.default.min.css")
+  end
+
   it "closes the response body after consuming it" do
     body_io = StringIO.new(html)
     inner = ->(_env) { [200, { "content-type" => "text/html" }, body_io] }
@@ -143,7 +152,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     expect(result).to include(default_theme_css)
     expect(result).not_to include("prism.min.js")
-    expect(result).not_to include("prism.min.css")
+    expect(result).not_to include("prism.default.min.css")
     expect(result).not_to include("prism-init.js")
   end
 end

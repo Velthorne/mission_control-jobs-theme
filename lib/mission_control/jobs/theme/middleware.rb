@@ -18,7 +18,6 @@ module MissionControl
       #       theme: :malachite_light,
       #       syntax_highlighting: true
       class Middleware
-        PRISM_CSS = '<link rel="stylesheet" href="/mission_control/css/prism.min.css">'
         PRISM_JS   = '<script src="/mission_control/js/prism.min.js" data-manual></script>'
         PRISM_INIT = '<script src="/mission_control/js/prism-init.js"></script>'
 
@@ -85,10 +84,15 @@ module MissionControl
           %(<link rel="stylesheet" href="/mission_control/css/#{theme}.min.css">)
         end
 
+        def prism_css(theme)
+          file = theme.to_s.end_with?("_dark") ? "prism.tomorrow.min.css" : "prism.default.min.css"
+          %(<link rel="stylesheet" href="/mission_control/css/#{file}">)
+        end
+
         def build_injection(theme, syntax_highlighting)
           parts =
             if syntax_highlighting
-              [PRISM_CSS, theme_css(theme), PRISM_JS, PRISM_INIT]
+              [prism_css(theme), theme_css(theme), PRISM_JS, PRISM_INIT]
             else
               [theme_css(theme)]
             end

@@ -17,13 +17,20 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
     expect(config.syntax_highlighting).to be(false)
   end
 
+  it "defines THEMES and DEFAULT_THEME constants" do
+    expect(described_class::THEMES).to eq(%i[malachite_light malachite_dark])
+    expect(described_class::THEMES).to be_frozen
+    expect(described_class::DEFAULT_THEME).to eq(:malachite_light)
+    expect(described_class::THEMES).to include(described_class::DEFAULT_THEME)
+  end
+
   describe "#theme=" do
     it "accepts a registered theme as Symbol or String" do
       config.theme = "malachite_light"
       expect(config.theme).to eq(:malachite_light)
 
-      config.theme = :malachite_light
-      expect(config.theme).to eq(:malachite_light)
+      config.theme = :malachite_dark
+      expect(config.theme).to eq(:malachite_dark)
     end
 
     it "raises for an unknown theme" do

@@ -9,7 +9,7 @@ module MissionControl
       class Configuration
         # Available theme identifiers. Each entry must have a matching
         # +{name}.min.css+ file under +assets/mission_control/css/+.
-        THEMES = %i[malachite_light].freeze
+        THEMES = %i[malachite_light malachite_dark].freeze
 
         # @return [Symbol] the theme applied when none is explicitly configured
         DEFAULT_THEME = :malachite_light
