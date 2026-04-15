@@ -1,9 +1,0 @@
-module MissionControl
-  module Jobs
-    module Theme
-      VERSION: String
-      # See the writing guide of rbs: https://github.com/ruby/rbs#guides
-      def self.reset_configuration!: -> untyped
-    end
-  end
-end
