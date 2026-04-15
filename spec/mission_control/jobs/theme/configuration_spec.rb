@@ -6,6 +6,7 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
   it "has sensible defaults" do
     expect(config.mount_path).to be_nil
     expect(config.syntax_highlighting).to be(true)
+    expect(config.theme).to eq(:malachite_light)
   end
 
   it "allows overriding settings" do
@@ -14,6 +15,21 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
 
     expect(config.mount_path).to eq("/admin/jobs")
     expect(config.syntax_highlighting).to be(false)
+  end
+
+  describe "#theme=" do
+    it "accepts a registered theme as Symbol or String" do
+      config.theme = "malachite_light"
+      expect(config.theme).to eq(:malachite_light)
+
+      config.theme = :malachite_light
+      expect(config.theme).to eq(:malachite_light)
+    end
+
+    it "raises for an unknown theme" do
+      expect { config.theme = :nonexistent }
+        .to raise_error(MissionControl::Jobs::Theme::Error, /unknown theme :nonexistent/)
+    end
   end
 
   describe "module-level DSL" do

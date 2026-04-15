@@ -25,6 +25,7 @@ module MissionControl
 
           app.middleware.use MissionControl::Jobs::Theme::Middleware,
                              mount_path:,
+                             theme: config.theme,
                              syntax_highlighting: config.syntax_highlighting
         end
       end

@@ -4,6 +4,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
   let(:html) do
     "<!DOCTYPE html><html><head><title>MC</title></head><body>OK</body></html>"
   end
+  let(:default_theme_css) { 'href="/mission_control/css/malachite_light.min.css"' }
 
   def build_app(status: 200, headers: { "content-type" => "text/html" }, body: html, **middleware_opts)
     inner = ->(_env) { [status, headers, [body]] }
@@ -20,10 +21,10 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     result = body.join
 
     expect(result).to include('href="/mission_control/css/prism.min.css"')
-    expect(result).to include('href="/mission_control/css/theme.min.css"')
+    expect(result).to include(default_theme_css)
     expect(result).to include('src="/mission_control/js/prism.min.js"')
     expect(result).to include('src="/mission_control/js/prism-init.js"')
-    expect(result.index("prism.min.css")).to be < result.index("theme.min.css")
+    expect(result.index("prism.min.css")).to be < result.index("malachite_light.min.css")
     expect(headers["content-length"]).to eq(result.bytesize.to_s)
     expect(status).to eq(200)
   end
@@ -37,14 +38,14 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
   it "injects for nested engine paths like /jobs/queues" do
     _, _, body = request(build_app, script_name: "/jobs", path: "/queues")
 
-    expect(body.join).to include(described_class::THEME_CSS)
+    expect(body.join).to include(default_theme_css)
   end
 
   it "injects when content-type includes charset" do
     app = build_app(headers: { "content-type" => "text/html; charset=utf-8" })
     _, _, body = request(app, script_name: "/jobs")
 
-    expect(body.join).to include(described_class::THEME_CSS)
+    expect(body.join).to include(default_theme_css)
   end
 
   it "passes through non-matching paths unchanged" do
@@ -80,7 +81,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     app = build_app(body: "<html><body>No head</body></html>")
     _, _, body = request(app, script_name: "/jobs")
 
-    expect(body.join).not_to include(described_class::THEME_CSS)
+    expect(body.join).not_to include(default_theme_css)
   end
 
   it "only injects link/script tags — no other HTML modifications" do
@@ -96,10 +97,17 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     app = build_app(mount_path: "/admin/jobs")
 
     _, _, body = request(app, script_name: "/admin/jobs")
-    expect(body.join).to include(described_class::THEME_CSS)
+    expect(body.join).to include(default_theme_css)
 
     _, _, body = request(app, script_name: "/jobs")
     expect(body.join).to eq(html)
+  end
+
+  it "uses the configured theme name in the CSS link" do
+    app = build_app(theme: :custom_dark)
+    _, _, body = request(app, script_name: "/jobs")
+
+    expect(body.join).to include('href="/mission_control/css/custom_dark.min.css"')
   end
 
   it "closes the response body after consuming it" do
@@ -118,7 +126,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     app = described_class.new(inner)
     _, _, body = app.call("SCRIPT_NAME" => "/jobs", "PATH_INFO" => "/")
 
-    expect(body.join).to include(described_class::THEME_CSS)
+    expect(body.join).to include(default_theme_css)
   end
 
   it "passes through Turbo Stream responses at /jobs unchanged" do
@@ -133,7 +141,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     _, _, body = request(app, script_name: "/jobs")
     result = body.join
 
-    expect(result).to include('href="/mission_control/css/theme.min.css"')
+    expect(result).to include(default_theme_css)
     expect(result).not_to include("prism.min.js")
     expect(result).not_to include("prism.min.css")
     expect(result).not_to include("prism-init.js")

@@ -15,21 +15,23 @@ module MissionControl
       # @example Manual Rack usage (typically wired by {Railtie})
       #   use MissionControl::Jobs::Theme::Middleware,
       #       mount_path: "/admin/jobs",
+      #       theme: :malachite_light,
       #       syntax_highlighting: true
       class Middleware
-        THEME_CSS = '<link rel="stylesheet" href="/mission_control/css/theme.min.css">'
         PRISM_CSS = '<link rel="stylesheet" href="/mission_control/css/prism.min.css">'
         PRISM_JS   = '<script src="/mission_control/js/prism.min.js" data-manual></script>'
         PRISM_INIT = '<script src="/mission_control/js/prism-init.js"></script>'
 
         # @param app [#call] the next Rack application in the middleware stack
         # @param mount_path [String] engine mount path to match against requests
+        # @param theme [Symbol] theme identifier used to resolve the CSS filename
         # @param syntax_highlighting [Boolean] inject Prism.js assets when +true+
-        def initialize(app, mount_path: RouteDiscovery::FALLBACK, syntax_highlighting: true)
+        def initialize(app, mount_path: RouteDiscovery::FALLBACK,
+                       theme: Configuration::DEFAULT_THEME, syntax_highlighting: true)
           @app = app
           @mount_path = mount_path
           @mount_path_prefix = "#{mount_path}/"
-          @injection = build_injection(syntax_highlighting)
+          @injection = build_injection(theme, syntax_highlighting)
         end
 
         # Process a Rack request, injecting theme assets into matching HTML responses.
@@ -79,12 +81,16 @@ module MissionControl
           body
         end
 
-        def build_injection(syntax_highlighting)
+        def theme_css(theme)
+          %(<link rel="stylesheet" href="/mission_control/css/#{theme}.min.css">)
+        end
+
+        def build_injection(theme, syntax_highlighting)
           parts =
             if syntax_highlighting
-              [PRISM_CSS, THEME_CSS, PRISM_JS, PRISM_INIT]
+              [PRISM_CSS, theme_css(theme), PRISM_JS, PRISM_INIT]
             else
-              [THEME_CSS]
+              [theme_css(theme)]
             end
           "#{parts.join("\n")}</head>".freeze
         end

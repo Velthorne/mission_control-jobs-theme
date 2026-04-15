@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
       ls.readlines("\x0", chomp: true).reject do |f|
         (f == gemspec) ||
           f.start_with?(*%w[bin/ test/ spec/ features/ docs/ .git .rspec .rubocop appveyor Gemfile Rakefile]) ||
-          f == "assets/mission_control/css/theme.css"
+          (f.start_with?("assets/mission_control/css/") && f.end_with?(".css") && !f.end_with?(".min.css"))
       end
     end
   spec.require_paths = ["lib"]

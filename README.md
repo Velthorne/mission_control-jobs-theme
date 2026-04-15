@@ -55,6 +55,9 @@ This creates `config/initializers/mission_control_jobs_theme.rb`:
 
 ```ruby
 MissionControl::Jobs::Theme.configure do |config|
+  # Available themes: malachite_light
+  # config.theme = :malachite_light
+
   # Mount path for MissionControl::Jobs::Engine (auto-discovered by default)
   # config.mount_path = "/jobs"
 
@@ -65,6 +68,7 @@ end
 
 | Option                | Default                 | Description                                                                                                                                                                |
 |-----------------------|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `theme`               | `:malachite_light`      | The visual theme to apply. Must be one of the themes listed in `Configuration::THEMES`.                                                                                    |
 | `mount_path`          | `nil` (auto-discovered) | Override the path where `MissionControl::Jobs::Engine` is mounted. When `nil`, the gem walks `Rails.application.routes` to find it automatically, falling back to `/jobs`. |
 | `syntax_highlighting` | `true`                  | Enable PrismJS JSON syntax highlighting on job detail pages. Set to `false` to inject only the CSS theme.                                                                  |
 

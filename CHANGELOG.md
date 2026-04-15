@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Configurable theme selection with support for multiple themes
+
 ## [0.2.0] - 2026-03-31
 
 - Broaden compatibility to Ruby >= 3.2 and Rails >= 7.1 (previously Ruby 3.4 / Rails 8.1 only)
