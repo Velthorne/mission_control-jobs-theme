@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-16
+
 - Dark mode support with auto color scheme that follows OS preference
 - Navbar color scheme switcher with cookie-based persistence across sessions
 
