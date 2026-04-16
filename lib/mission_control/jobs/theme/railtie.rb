@@ -23,10 +23,7 @@ module MissionControl
                              root: File.join(Gem.loaded_specs["mission_control-jobs-theme"].gem_dir, "assets"),
                              header_rules: [[:all, { "cache-control" => "public, max-age=31536000, immutable" }]]
 
-          app.middleware.use MissionControl::Jobs::Theme::Middleware,
-                             mount_path:,
-                             theme: config.theme,
-                             syntax_highlighting: config.syntax_highlighting
+          app.middleware.use MissionControl::Jobs::Theme::Middleware, mount_path:, config:
         end
       end
     end

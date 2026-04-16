@@ -4,18 +4,31 @@
 [![Gem Version](https://badge.fury.io/rb/mission_control-jobs-theme.svg)](https://badge.fury.io/rb/mission_control-jobs-theme)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/mission_control-jobs) — malachite color palette, refined typography, and JSON syntax highlighting. No view overrides, no asset pipeline dependency — just Rack middleware that injects a stylesheet into HTML responses.
+A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/mission_control-jobs) — malachite color palette with light/dark mode, refined typography, and JSON syntax highlighting. No view overrides, no asset pipeline dependency — just Rack middleware that injects stylesheets into HTML responses.
 
 ## Screenshots
 
-### Jobs list
-![Jobs list](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/jobs-list.png)
+### Light mode
 
-### Job details
-![Job page](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/job-page.png)
+#### Jobs list
+![Jobs list](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-jobs-list.png)
 
-### Worker overview
-![Worker page](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/worker-page.png)
+#### Job details
+![Job page](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-job-page.png)
+
+#### Worker overview
+![Worker page](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-worker-page.png)
+
+### Dark mode
+
+#### Jobs list
+![Jobs list — dark](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-jobs-list.png)
+
+#### Job details
+![Job page — dark](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-job-page.png)
+
+#### Worker overview
+![Worker page — dark](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-worker-page.png)
 
 ## Requirements
 
@@ -41,7 +54,7 @@ The theme is active immediately — no configuration required.
 
 ## How it works
 
-The gem inserts Rack middleware that intercepts HTML responses from the MissionControl::Jobs engine and injects a custom stylesheet (plus optional [PrismJS](https://prismjs.com) syntax highlighting) before `</head>`. Assets are served via `Rack::Static` independently of the host app's asset pipeline — no Propshaft or Sprockets integration required. The CSS overrides Bulma variables and component styles, so the theme stays functional even if upstream markup changes.
+The gem inserts Rack middleware that intercepts HTML responses from the MissionControl::Jobs engine and injects theme stylesheets, a color scheme switcher, and optional [PrismJS](https://prismjs.com) syntax highlighting before `</head>`. Assets are served via `Rack::Static` independently of the host app's asset pipeline — no Propshaft or Sprockets integration required. The CSS overrides Bulma variables and component styles, so the theme stays functional even if upstream markup changes.
 
 ## Configuration
 
@@ -55,22 +68,30 @@ This creates `config/initializers/mission_control_jobs_theme.rb`:
 
 ```ruby
 MissionControl::Jobs::Theme.configure do |config|
-  # Available themes: malachite_light
-  # config.theme = :malachite_light
+  # Light/dark appearance — :auto follows the OS preference, :light/:dark forces one.
+  # config.color_scheme = :auto
 
-  # Mount path for MissionControl::Jobs::Engine (auto-discovered by default)
+  # Show the light/dark/auto toggle in the navbar (set false to lock the scheme).
+  # config.color_scheme_switcher = true
+
+  # Override the auto-discovered MissionControl::Jobs::Engine mount path.
   # config.mount_path = "/jobs"
 
-  # PrismJS syntax highlighting for JSON blocks on detail pages
+  # Inject PrismJS for syntax-highlighted JSON on job detail pages.
   # config.syntax_highlighting = true
+
+  # Visual theme family — available: malachite.
+  # config.theme = :malachite
 end
 ```
 
-| Option                | Default                 | Description                                                                                                                                                                |
-|-----------------------|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `theme`               | `:malachite_light`      | The visual theme to apply. Must be one of the themes listed in `Configuration::THEMES`.                                                                                    |
-| `mount_path`          | `nil` (auto-discovered) | Override the path where `MissionControl::Jobs::Engine` is mounted. When `nil`, the gem walks `Rails.application.routes` to find it automatically, falling back to `/jobs`. |
-| `syntax_highlighting` | `true`                  | Enable PrismJS JSON syntax highlighting on job detail pages. Set to `false` to inject only the CSS theme.                                                                  |
+| Option                   | Default                 | Description                                                                                                                                                                |
+|--------------------------|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `color_scheme`           | `:auto`                 | Light/dark appearance. `:auto` follows the OS preference via `prefers-color-scheme`; `:light` or `:dark` forces one.                                                       |
+| `color_scheme_switcher`  | `true`                  | Show a light/dark/auto toggle in the navbar. When `false`, the scheme is locked to the configured default.                                                                 |
+| `mount_path`             | `nil` (auto-discovered) | Override the path where `MissionControl::Jobs::Engine` is mounted. When `nil`, the gem walks `Rails.application.routes` to find it automatically, falling back to `/jobs`. |
+| `syntax_highlighting`    | `true`                  | Enable PrismJS JSON syntax highlighting on job detail pages. Set to `false` to inject only the CSS theme.                                                                  |
+| `theme`                  | `:malachite`            | Visual theme family. Each family provides both light and dark variants.                                                                                                    |
 
 ## Compatibility
 

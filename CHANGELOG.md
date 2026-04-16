@@ -1,8 +1,7 @@
 ## [Unreleased]
 
-- Configurable theme selection with support for multiple themes
-- Add Malachite Dark theme with dark-aware Prism syntax highlighting
-- Auto theme (default) that follows OS light/dark preference via `prefers-color-scheme`
+- Dark mode support with auto color scheme that follows OS preference
+- Navbar color scheme switcher with cookie-based persistence across sessions
 
 ## [0.2.0] - 2026-03-31
 

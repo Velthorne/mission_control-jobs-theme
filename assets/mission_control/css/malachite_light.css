@@ -353,6 +353,22 @@ a {
     }
   }
 
+  /* -- Color scheme switcher — dropdown in navbar-end -- */
+
+  & .mc-scheme-switcher {
+    & .mc-scheme-trigger {
+      display: flex;
+      align-items: center;
+    }
+
+    & .navbar-dropdown .navbar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      white-space: nowrap;
+    }
+  }
+
   /* -- Misc -- */
 
   & .navbar-divider {
@@ -428,15 +444,6 @@ a {
       border-left-color: var(--mc-primary) !important;
     }
 
-    /* Failed jobs tab — subtle danger accent for operational awareness */
-    & a[href*="/failed/"] {
-      color: var(--mc-danger-muted) !important;
-
-      &:hover {
-        color: var(--mc-danger-dark) !important;
-        background-color: var(--mc-danger-tint) !important;
-      }
-    }
   }
 
   &:not(.is-toggle) li.is-active a[href*="/failed/"],
@@ -451,6 +458,12 @@ a {
     & a {
       border-color: var(--mc-border);
       color: var(--mc-body-secondary);
+      background-color: #fff;
+      font-family: var(--mc-font-heading);
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       transition: all var(--mc-transition);
       text-decoration: none;
 

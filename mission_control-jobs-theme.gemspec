@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "A polished visual theme for the mission_control-jobs dashboard"
   spec.description = "Drop-in theme that refreshes the MissionControl::Jobs UI with refined " \
-                     "typography, a malachite color palette, and JSON syntax highlighting. " \
+                     "typography, a malachite color palette, light/dark mode, and JSON syntax highlighting. " \
                      "Zero configuration — works via Rack middleware without overriding views."
   spec.homepage = "https://github.com/Velthorne/mission_control-jobs-theme"
   spec.license = "MIT"

@@ -366,6 +366,22 @@ a {
     }
   }
 
+  /* -- Color scheme switcher — dropdown in navbar-end -- */
+
+  & .mc-scheme-switcher {
+    & .mc-scheme-trigger {
+      display: flex;
+      align-items: center;
+    }
+
+    & .navbar-dropdown .navbar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      white-space: nowrap;
+    }
+  }
+
   /* -- Misc -- */
 
   & .navbar-divider {

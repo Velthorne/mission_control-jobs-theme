@@ -5,16 +5,24 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     "<!DOCTYPE html><html><head><title>MC</title></head><body>OK</body></html>"
   end
 
-  def build_app(status: 200, headers: { "content-type" => "text/html" }, body: html, **middleware_opts)
+  def build_config(**overrides)
+    MissionControl::Jobs::Theme::Configuration.new.tap do |c|
+      overrides.each { |key, value| c.public_send(:"#{key}=", value) }
+    end
+  end
+
+  def build_app(status: 200, headers: { "content-type" => "text/html" }, body: html, **opts)
     inner = ->(_env) { [status, headers, [body]] }
-    described_class.new(inner, **middleware_opts)
+    described_class.new(inner, **opts)
   end
 
-  def request(app, script_name: "", path: "/")
-    app.call("SCRIPT_NAME" => script_name, "PATH_INFO" => path)
+  def request(app, script_name: "", path: "/", cookie: nil)
+    env = { "SCRIPT_NAME" => script_name, "PATH_INFO" => path }
+    env["HTTP_COOKIE"] = "#{MissionControl::Jobs::Theme::Configuration::COOKIE_NAME}=#{cookie}" if cookie
+    app.call(env)
   end
 
-  context "with auto theme (default)" do
+  context "with auto color scheme (default, no cookie)" do
     it "injects both light and dark stylesheets with prefers-color-scheme media queries" do
       app = build_app(headers: { "content-type" => "text/html", "content-length" => html.bytesize.to_s })
       _, headers, body = request(app, script_name: "/jobs")
@@ -24,61 +32,112 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
                                 'prism.default.min.css" media="(prefers-color-scheme: light)"',
                                 'prism.tomorrow.min.css" media="(prefers-color-scheme: dark)"',
                                 'src="/mission_control/js/prism.min.js"',
-                                'src="/mission_control/js/prism-init.js"')
+                                'src="/mission_control/js/prism-init.js"',
+                                'color-scheme-switcher.js" data-default-color-scheme="auto"',
+                                'data-cookie-name="mc_jobs_color_scheme"')
       expect(headers["content-length"]).to eq(result.bytesize.to_s)
     end
 
     it "omits PrismJS when syntax_highlighting is disabled" do
-      app = build_app(theme: :auto, syntax_highlighting: false)
+      app = build_app(config: build_config(syntax_highlighting: false))
       _, _, body = request(app, script_name: "/jobs")
       result = body.join
       expect(result).to include('malachite_light.min.css" media="(prefers-color-scheme: light)"',
-                                'malachite_dark.min.css" media="(prefers-color-scheme: dark)"')
-      expect(result).not_to include("prism.min.js")
-      expect(result).not_to include("prism.default.min.css")
-      expect(result).not_to include("prism.tomorrow.min.css")
-      expect(result).not_to include("prism-init.js")
+                                'malachite_dark.min.css" media="(prefers-color-scheme: dark)"',
+                                'color-scheme-switcher.js" data-default-color-scheme="auto"')
+      expect(result).not_to include("prism.min.js", "prism.default.min.css",
+                                    "prism.tomorrow.min.css", "prism-init.js")
     end
   end
 
-  context "with explicit theme" do
-    it "injects a single theme and PrismJS assets without media queries" do
-      app = build_app(theme: :malachite_light,
+  context "with explicit color scheme (no cookie)" do
+    it "loads only the light variant when configured" do
+      app = build_app(config: build_config(color_scheme: :light),
                       headers: { "content-type" => "text/html", "content-length" => html.bytesize.to_s })
       _, headers, body = request(app, script_name: "/jobs")
       result = body.join
-      expect(result).to include('href="/mission_control/css/malachite_light.min.css"',
+      expect(result).to include('malachite_light.min.css">',
+                                'prism.default.min.css">',
                                 'src="/mission_control/js/prism.min.js"',
-                                'src="/mission_control/js/prism-init.js"')
-      expect(result).not_to include("media=")
+                                'src="/mission_control/js/prism-init.js"',
+                                'color-scheme-switcher.js" data-default-color-scheme="light"')
+      expect(result).not_to include("malachite_dark", "prism.tomorrow")
       expect(headers["content-length"]).to eq(result.bytesize.to_s)
     end
 
-    it "uses the configured theme name in the CSS link" do
-      app = build_app(theme: :custom_dark)
-      _, _, body = request(app, script_name: "/jobs")
-
-      expect(body.join).to include('href="/mission_control/css/custom_dark.min.css"')
-    end
-
-    it "selects prism.tomorrow.min.css for dark themes" do
-      app = build_app(theme: :malachite_dark)
+    it "loads only the dark variant when configured" do
+      app = build_app(config: build_config(color_scheme: :dark))
       _, _, body = request(app, script_name: "/jobs")
       result = body.join
-
-      expect(result).to include('href="/mission_control/css/prism.tomorrow.min.css"')
-      expect(result).not_to include("prism.default.min.css")
+      expect(result).to include('malachite_dark.min.css">',
+                                'prism.tomorrow.min.css">',
+                                'color-scheme-switcher.js" data-default-color-scheme="dark"')
+      expect(result).not_to include("malachite_light", "prism.default")
     end
 
     it "omits PrismJS when syntax_highlighting is disabled" do
-      app = build_app(theme: :malachite_light, syntax_highlighting: false)
+      app = build_app(config: build_config(color_scheme: :light, syntax_highlighting: false))
       _, _, body = request(app, script_name: "/jobs")
       result = body.join
+      expect(result).to include('malachite_light.min.css">')
+      expect(result).not_to include("prism.min.js", "prism.default.min.css",
+                                    "prism.tomorrow.min.css", "prism-init.js",
+                                    "malachite_dark")
+    end
+  end
 
-      expect(result).to include('href="/mission_control/css/malachite_light.min.css"')
-      expect(result).not_to include("prism.min.js")
-      expect(result).not_to include("prism.default.min.css")
-      expect(result).not_to include("prism-init.js")
+  context "with cookie-based color scheme override" do
+    it "loads only the cookie scheme, overriding auto default" do
+      app = build_app
+      _, _, body = request(app, script_name: "/jobs", cookie: "dark")
+      result = body.join
+      expect(result).to include('malachite_dark.min.css">',
+                                'prism.tomorrow.min.css">',
+                                'color-scheme-switcher.js" data-default-color-scheme="auto"')
+      expect(result).not_to include("malachite_light", "prism.default", "prefers-color-scheme")
+    end
+
+    it "overrides an explicit configured scheme with the cookie value" do
+      app = build_app(config: build_config(color_scheme: :light))
+      _, _, body = request(app, script_name: "/jobs", cookie: "dark")
+      result = body.join
+      expect(result).to include('malachite_dark.min.css">')
+      expect(result).not_to include("malachite_light")
+    end
+
+    it "ignores invalid cookie values and falls back to default" do
+      app = build_app
+      _, _, body = request(app, script_name: "/jobs", cookie: "bogus")
+      result = body.join
+      expect(result).to include('malachite_light.min.css" media="(prefers-color-scheme: light)"',
+                                'malachite_dark.min.css" media="(prefers-color-scheme: dark)"')
+    end
+
+    it "treats cookie value 'auto' as invalid and falls back to default" do
+      app = build_app
+      _, _, body = request(app, script_name: "/jobs", cookie: "auto")
+      result = body.join
+      expect(result).to include('malachite_light.min.css" media="(prefers-color-scheme: light)"',
+                                'malachite_dark.min.css" media="(prefers-color-scheme: dark)"')
+    end
+
+    it "reads cookie from a multi-cookie header" do
+      app = build_app
+      env = { "SCRIPT_NAME" => "/jobs", "PATH_INFO" => "/",
+              "HTTP_COOKIE" => "session=abc123; mc_jobs_color_scheme=light; other=val" }
+      _, _, body = app.call(env)
+      result = body.join
+      expect(result).to include('malachite_light.min.css">')
+      expect(result).not_to include("malachite_dark")
+    end
+  end
+
+  context "with color_scheme_switcher disabled" do
+    it "omits the color-scheme-switcher script" do
+      app = build_app(config: build_config(color_scheme_switcher: false))
+      _, _, body = request(app, script_name: "/jobs")
+
+      expect(body.join).not_to include("color-scheme-switcher.js")
     end
   end
 

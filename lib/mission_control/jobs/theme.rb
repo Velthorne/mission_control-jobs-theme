@@ -19,7 +19,8 @@ module MissionControl
     #
     # @example Configure in an initializer
     #   MissionControl::Jobs::Theme.configure do |config|
-    #     config.theme = :malachite_light
+    #     config.theme = :malachite
+    #     config.color_scheme = :auto
     #     config.mount_path = "/admin/jobs"
     #     config.syntax_highlighting = false
     #   end

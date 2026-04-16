@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
 MissionControl::Jobs::Theme.configure do |config|
-  # Theme selection (:auto matches OS light/dark preference)
-  # Available themes: auto, <%= MissionControl::Jobs::Theme::Configuration::THEMES.join(", ") %>
-  # config.theme = :auto
+  # Light/dark appearance — :auto follows the OS preference, :light/:dark forces one.
+  # config.color_scheme = :auto
 
-  # Mount path for MissionControl::Jobs::Engine (auto-discovered by default)
+  # Show the light/dark/auto toggle in the navbar (set false to lock the scheme).
+  # config.color_scheme_switcher = true
+
+  # Override the auto-discovered MissionControl::Jobs::Engine mount path.
   # config.mount_path = "/jobs"
 
-  # PrismJS syntax highlighting for JSON blocks on detail pages
+  # Inject PrismJS for syntax-highlighted JSON on job detail pages.
   # config.syntax_highlighting = true
+
+  # Visual theme family — available: <%= MissionControl::Jobs::Theme::Configuration::THEMES.join(", ") %>.
+  # config.theme = :<%= MissionControl::Jobs::Theme::Configuration::DEFAULT_THEME %>
 end

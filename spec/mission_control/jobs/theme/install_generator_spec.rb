@@ -12,8 +12,9 @@ RSpec.describe MissionControl::Jobs::Theme::InstallGenerator do
       content = File.read(File.join(tmpdir, "config/initializers/mission_control_jobs_theme.rb"))
 
       expect(content).to include("MissionControl::Jobs::Theme.configure")
-      expect(content).to include("# config.mount_path")
-      expect(content).to include("# config.syntax_highlighting")
+      expect(content).to include("# config.color_scheme =", "# config.color_scheme_switcher",
+                                 "# config.mount_path", "# config.syntax_highlighting",
+                                 "# config.theme")
     end
   end
 end
