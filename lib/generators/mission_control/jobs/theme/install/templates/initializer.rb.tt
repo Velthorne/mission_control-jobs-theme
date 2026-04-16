@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 MissionControl::Jobs::Theme.configure do |config|
-  # Available themes: <%= MissionControl::Jobs::Theme::Configuration::THEMES.join(", ") %>
-  # config.theme = :malachite_light
+  # Theme selection (:auto matches OS light/dark preference)
+  # Available themes: auto, <%= MissionControl::Jobs::Theme::Configuration::THEMES.join(", ") %>
+  # config.theme = :auto
 
   # Mount path for MissionControl::Jobs::Engine (auto-discovered by default)
   # config.mount_path = "/jobs"

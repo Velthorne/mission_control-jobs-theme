@@ -15,7 +15,7 @@ module MissionControl
       # @example Manual Rack usage (typically wired by {Railtie})
       #   use MissionControl::Jobs::Theme::Middleware,
       #       mount_path: "/admin/jobs",
-      #       theme: :malachite_light,
+      #       theme: :auto,
       #       syntax_highlighting: true
       class Middleware
         PRISM_JS   = '<script src="/mission_control/js/prism.min.js" data-manual></script>'
@@ -23,7 +23,8 @@ module MissionControl
 
         # @param app [#call] the next Rack application in the middleware stack
         # @param mount_path [String] engine mount path to match against requests
-        # @param theme [Symbol] theme identifier used to resolve the CSS filename
+        # @param theme [Symbol] theme name from {Configuration::THEMES}, or +:auto+
+        #   to inject both light and dark stylesheets with +prefers-color-scheme+ media queries
         # @param syntax_highlighting [Boolean] inject Prism.js assets when +true+
         def initialize(app, mount_path: RouteDiscovery::FALLBACK,
                        theme: Configuration::DEFAULT_THEME, syntax_highlighting: true)
@@ -80,23 +81,33 @@ module MissionControl
           body
         end
 
-        def theme_css(theme)
-          %(<link rel="stylesheet" href="/mission_control/css/#{theme}.min.css">)
+        def theme_css(theme, media: nil)
+          media_attr = %( media="#{media}") if media
+          %(<link rel="stylesheet" href="/mission_control/css/#{theme}.min.css"#{media_attr}>)
         end
 
-        def prism_css(theme)
+        def prism_css(theme, media: nil)
           file = theme.to_s.end_with?("_dark") ? "prism.tomorrow.min.css" : "prism.default.min.css"
-          %(<link rel="stylesheet" href="/mission_control/css/#{file}">)
+          media_attr = %( media="#{media}") if media
+          %(<link rel="stylesheet" href="/mission_control/css/#{file}"#{media_attr}>)
         end
 
         def build_injection(theme, syntax_highlighting)
-          parts =
-            if syntax_highlighting
-              [prism_css(theme), theme_css(theme), PRISM_JS, PRISM_INIT]
-            else
-              [theme_css(theme)]
-            end
+          themes = theme == :auto ? auto_themes : [[theme, nil]]
+          parts = themes.map { |t, media| theme_css(t, media:) }
+
+          if syntax_highlighting
+            themes.each { |t, media| parts.push(prism_css(t, media:)) }
+            parts.push(PRISM_JS, PRISM_INIT)
+          end
+
           "#{parts.join("\n")}</head>".freeze
+        end
+
+        def auto_themes
+          light = Configuration::THEMES.find { |t| t.to_s.end_with?("_light") }
+          dark  = Configuration::THEMES.find { |t| t.to_s.end_with?("_dark") }
+          [[light, "(prefers-color-scheme: light)"], [dark, "(prefers-color-scheme: dark)"]]
         end
       end
     end

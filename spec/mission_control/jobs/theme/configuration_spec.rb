@@ -6,7 +6,7 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
   it "has sensible defaults" do
     expect(config.mount_path).to be_nil
     expect(config.syntax_highlighting).to be(true)
-    expect(config.theme).to eq(:malachite_light)
+    expect(config.theme).to eq(:auto)
   end
 
   it "allows overriding settings" do
@@ -17,15 +17,17 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
     expect(config.syntax_highlighting).to be(false)
   end
 
-  it "defines THEMES and DEFAULT_THEME constants" do
+  it "defines theme constants" do
     expect(described_class::THEMES).to eq(%i[malachite_light malachite_dark])
     expect(described_class::THEMES).to be_frozen
-    expect(described_class::DEFAULT_THEME).to eq(:malachite_light)
-    expect(described_class::THEMES).to include(described_class::DEFAULT_THEME)
+    expect(described_class::DEFAULT_THEME).to eq(:auto)
   end
 
   describe "#theme=" do
-    it "accepts a registered theme as Symbol or String" do
+    it "accepts :auto, a registered theme as Symbol, or a String" do
+      config.theme = :auto
+      expect(config.theme).to eq(:auto)
+
       config.theme = "malachite_light"
       expect(config.theme).to eq(:malachite_light)
 

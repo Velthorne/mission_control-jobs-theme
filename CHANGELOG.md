@@ -1,6 +1,8 @@
 ## [Unreleased]
 
 - Configurable theme selection with support for multiple themes
+- Add Malachite Dark theme with dark-aware Prism syntax highlighting
+- Auto theme (default) that follows OS light/dark preference via `prefers-color-scheme`
 
 ## [0.2.0] - 2026-03-31
 

@@ -30,6 +30,6 @@ RSpec.describe MissionControl::Jobs::Theme::Railtie do
         middleware.klass == MissionControl::Jobs::Theme::Middleware
       end
 
-    expect(theme_middleware.args).to include(hash_including(mount_path: "/jobs", theme: :malachite_light))
+    expect(theme_middleware.args).to include(hash_including(mount_path: "/jobs", theme: :auto))
   end
 end
