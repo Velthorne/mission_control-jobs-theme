@@ -29,12 +29,8 @@
   color-scheme: dark;
 
   --mc-primary: #13795b;
-  --mc-primary-hover: #127054;
-  --mc-primary-subtle: rgba(19, 121, 91, 0.12);
   --mc-primary-tint: rgba(19, 121, 91, 0.2);
-  --mc-primary-ring: rgba(19, 121, 91, 0.4);
-  --mc-primary-border: rgba(19, 121, 91, 0.25);
-  --mc-light: #0a4332;
+  --mc-secondary-hover: #556a5e;
   --mc-bg: #121916;
   --mc-gold: #a8893a;
   --mc-gold-dark: #daba6c;
@@ -47,20 +43,21 @@
   --mc-iris-tint: rgba(122, 104, 152, 0.2);
   --mc-danger: #bb4452;
   --mc-danger-dark: #ff828b;
-  --mc-danger-hover: #ba4351;
+  --mc-danger-hover: #b4414f;
   --mc-danger-tint: rgba(187, 68, 82, 0.15);
-  --mc-danger-border: rgba(187, 68, 82, 0.3);
   --mc-body-color: #e6eee9;
   --mc-body-secondary: #c6cec9;
   --mc-body-tertiary: #919995;
   --mc-border: rgba(230, 238, 233, 0.12);
   --mc-sage: #adbfb4;
+  --mc-sage-ring: rgba(173, 191, 180, 0.6);
   --mc-neutral-bg: rgba(230, 238, 233, 0.08);
   --mc-neutral-border: rgba(230, 238, 233, 0.15);
   --mc-neutral-hover: rgba(230, 238, 233, 0.2);
   --mc-tab-bg: #32453d;
   --mc-tab-hover-bg: #4c5e54;
   --mc-tab-active-bg: rgba(80, 170, 140, 0.6);
+  --mc-tab-active-hover-bg: rgba(80, 170, 140, 0.75);
   --mc-datagrid-header-bg: #4c5e54;
   --mc-font-body: 'Albert Sans', sans-serif;
   --mc-font-heading: 'Archivo Narrow', sans-serif;
@@ -125,7 +122,7 @@ h2.subtitle {
   border: 1px solid var(--mc-panel-border);
   border-radius: var(--mc-radius) var(--mc-radius) 0 0;
   box-shadow: var(--mc-panel-shadow);
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1rem;
   margin-top: 1.5rem;
   margin-bottom: 0 !important;
 
@@ -450,6 +447,11 @@ a {
       color: var(--mc-body-color) !important;
       background-color: var(--mc-tab-active-bg) !important;
       border-color: var(--mc-tab-active-bg) !important;
+
+      &:hover {
+        background-color: var(--mc-tab-active-hover-bg) !important;
+        border-color: var(--mc-tab-active-hover-bg) !important;
+      }
     }
 
     /* Restore right border on the item before active (avoid double-border gap) */
@@ -464,6 +466,11 @@ a {
     color: var(--mc-body-color) !important;
     background-color: #9d3945 !important;
     border-color: #9d3945 !important;
+
+    &:hover {
+      background-color: var(--mc-danger-hover) !important;
+      border-color: var(--mc-danger-hover) !important;
+    }
   }
 
   /* Toggle tabs (server selector, backtrace toggle) */
@@ -492,6 +499,11 @@ a {
       background-color: var(--mc-tab-active-bg);
       border-color: var(--mc-tab-active-bg);
       color: var(--mc-body-color);
+
+      &:hover {
+        background-color: var(--mc-tab-active-hover-bg);
+        border-color: var(--mc-tab-active-hover-bg);
+      }
     }
 
     &.is-toggle-rounded li:first-child a {
@@ -507,7 +519,7 @@ a {
 
   /* Focus ring — keyboard accessibility for tab navigation */
   & a:focus-visible {
-    outline: 2px solid var(--mc-primary-tint);
+    outline: 2px solid var(--mc-sage-ring);
     outline-offset: -2px;
     border-radius: var(--mc-radius-sm);
   }
@@ -868,10 +880,11 @@ h1.title .tag {
 
 .button {
   font-family: var(--mc-font-heading);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  padding: 0.45em 0.85em;
   border-radius: 0.375rem;
   box-shadow: none;
   transition: background-color var(--mc-transition), color var(--mc-transition), border-color var(--mc-transition);
@@ -892,11 +905,10 @@ h1.title .tag {
     cursor: not-allowed;
   }
 
-  /* Primary / Link / Success — solid dark teal (btn-solid pattern) */
+  /* Primary / Link / Success — solid dark teal */
   &.is-primary,
   &.is-link,
-  &.is-success,
-  &.is-success.is-light {
+  &.is-success {
     background-color: #0d5640;
     border-color: #0d5640;
     color: var(--mc-body-color);
@@ -913,9 +925,28 @@ h1.title .tag {
       color: var(--mc-body-color);
       border-color: rgba(19, 121, 91, 0.3);
     }
+
+    &.is-light {
+      background-color: rgba(19, 121, 91, 0.4);
+      border-color: rgba(19, 121, 91, 0.5);
+      color: #69c2a1;
+
+      &:hover,
+      &:focus-visible {
+        background-color: #0d5640;
+        border-color: #0d5640;
+        color: var(--mc-body-color);
+      }
+
+      &[disabled] {
+        background-color: rgba(19, 121, 91, 0.1);
+        color: rgba(105, 194, 161, 0.4);
+        border-color: rgba(19, 121, 91, 0.12);
+      }
+    }
   }
 
-  /* Danger button — solid dark garnet (btn-solid pattern, not tint-to-solid) */
+  /* Danger — solid dark garnet */
   &.is-danger {
     background-color: #9d3945;
     border-color: #9d3945;
@@ -923,8 +954,8 @@ h1.title .tag {
 
     &:hover,
     &:focus-visible {
-      background-color: #b4414f;
-      border-color: #b4414f;
+      background-color: var(--mc-danger-hover);
+      border-color: var(--mc-danger-hover);
       color: var(--mc-body-color);
     }
 
@@ -935,14 +966,21 @@ h1.title .tag {
     }
 
     &.is-light {
-      background-color: #9d3945;
-      color: var(--mc-body-color);
-      border-color: #9d3945;
+      background-color: rgba(187, 68, 82, 0.35);
+      border-color: rgba(187, 68, 82, 0.45);
+      color: var(--mc-danger-dark);
 
-      &:hover {
-        background-color: #b4414f;
+      &:hover,
+      &:focus-visible {
+        background-color: #9d3945;
+        border-color: #9d3945;
         color: var(--mc-body-color);
-        border-color: #b4414f;
+      }
+
+      &[disabled] {
+        background-color: rgba(187, 68, 82, 0.08);
+        color: rgba(255, 130, 139, 0.4);
+        border-color: rgba(187, 68, 82, 0.12);
       }
     }
   }
@@ -964,11 +1002,29 @@ h1.title .tag {
       color: var(--mc-body-color);
       border-color: rgba(122, 104, 152, 0.3);
     }
+
+    &.is-light {
+      background-color: rgba(122, 104, 152, 0.45);
+      border-color: rgba(122, 104, 152, 0.55);
+      color: #c6b3e7;
+
+      &:hover,
+      &:focus-visible {
+        background-color: #675780;
+        border-color: #675780;
+        color: var(--mc-body-color);
+      }
+
+      &[disabled] {
+        background-color: rgba(122, 104, 152, 0.08);
+        color: rgba(198, 179, 231, 0.4);
+        border-color: rgba(122, 104, 152, 0.12);
+      }
+    }
   }
 
-  /* Warning button — solid dark gold (btn-solid pattern) */
-  &.is-warning,
-  &.is-warning.is-light {
+  /* Warning — solid dark gold */
+  &.is-warning {
     background-color: #8a7030;
     border-color: #8a7030;
     color: var(--mc-body-color);
@@ -985,25 +1041,44 @@ h1.title .tag {
       color: var(--mc-body-color);
       border-color: rgba(168, 137, 58, 0.3);
     }
+
+    &.is-light {
+      background-color: var(--mc-gold-tint);
+      border-color: var(--mc-gold-border);
+      color: var(--mc-gold-dark);
+
+      &:hover,
+      &:focus-visible {
+        background-color: #8a7030;
+        border-color: #8a7030;
+        color: var(--mc-body-color);
+      }
+
+      &[disabled] {
+        background-color: rgba(218, 186, 108, 0.08);
+        color: rgba(218, 186, 108, 0.4);
+        border-color: rgba(218, 186, 108, 0.12);
+      }
+    }
   }
 
-  /* Light button + plain button — neutral secondary */
+  /* Light / plain button — tinted sage */
   &.is-light,
   &:not([class*="is-"]) {
-    background-color: var(--mc-neutral-bg);
-    border-color: var(--mc-neutral-border);
-    color: var(--mc-body-secondary);
+    background-color: rgba(90, 112, 99, 0.2);
+    border-color: rgba(90, 112, 99, 0.35);
+    color: var(--mc-sage);
 
     &:hover {
-      background-color: var(--mc-neutral-hover);
+      background-color: var(--mc-secondary-hover);
+      border-color: var(--mc-secondary-hover);
       color: var(--mc-body-color);
-      border-color: var(--mc-neutral-border);
     }
 
     &[disabled] {
-      background-color: rgba(230, 238, 233, 0.04);
-      color: rgba(230, 238, 233, 0.3);
-      border-color: rgba(230, 238, 233, 0.08);
+      background-color: rgba(90, 112, 99, 0.08);
+      color: rgba(173, 191, 180, 0.4);
+      border-color: rgba(90, 112, 99, 0.12);
     }
   }
 }
@@ -1359,7 +1434,7 @@ pre,
 }
 
 pre {
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   font-size: 0.82rem;
   color: #d1e3d8;
   line-height: 1.7;
@@ -1490,7 +1565,7 @@ nav.buttons.is-right[role="navigation"] .mr-3 {
 /* -- Focus-visible — keyboard accessibility for all interactive elements -- */
 
 a:focus-visible {
-  outline: 2px solid var(--mc-primary-ring);
+  outline: 2px solid var(--mc-sage-ring);
   outline-offset: 2px;
   border-radius: var(--mc-radius-sm);
 }

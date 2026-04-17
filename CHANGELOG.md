@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.3.1] - 2026-04-17
+
+- Visual refinements across both themes for improved consistency and accessibility
+
 ## [0.3.0] - 2026-04-16
 
 - Dark mode support with auto color scheme that follows OS preference
