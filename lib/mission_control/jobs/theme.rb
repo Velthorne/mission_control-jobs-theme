@@ -15,7 +15,7 @@ module MissionControl
     #
     # @see Configuration
     # @see Middleware
-    # @see Railtie
+    # @see Engine
     #
     # @example Configure in an initializer
     #   MissionControl::Jobs::Theme.configure do |config|
@@ -27,29 +27,18 @@ module MissionControl
     module Theme
       class Error < StandardError; end
 
-      # Yield the current configuration for modification.
-      #
       # @yield [config] the mutable configuration instance
       # @yieldparam config [Configuration] current configuration
       # @return [void]
-      #
-      # @example
-      #   MissionControl::Jobs::Theme.configure do |config|
-      #     config.syntax_highlighting = false
-      #   end
       def self.configure
         yield(configuration)
       end
 
-      # Return the current configuration, initializing it on first access.
-      #
-      # @return [Configuration]
+      # @return [Configuration] the current (lazily-initialized) configuration instance
       def self.configuration
         @configuration ||= Configuration.new
       end
 
-      # Reset the configuration to defaults.
-      #
       # @return [Configuration] the fresh configuration instance
       def self.reset_configuration!
         @configuration = Configuration.new
@@ -58,4 +47,4 @@ module MissionControl
   end
 end
 
-require_relative "theme/railtie" if defined?(Rails::Railtie)
+require_relative "theme/engine" if defined?(Rails::Engine)

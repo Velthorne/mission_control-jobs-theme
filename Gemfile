@@ -8,6 +8,8 @@ gemspec
 gem "irb"
 gem "rake"
 
+gem "propshaft"
+
 gem "rspec"
 gem "simplecov"
 

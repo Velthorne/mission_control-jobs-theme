@@ -4,37 +4,34 @@
 [![Gem Version](https://badge.fury.io/rb/mission_control-jobs-theme.svg)](https://badge.fury.io/rb/mission_control-jobs-theme)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/mission_control-jobs) — malachite color palette with light/dark mode, refined typography, and JSON syntax highlighting. No view overrides, no asset pipeline dependency — just Rack middleware that injects stylesheets into HTML responses.
+A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/mission_control-jobs) — malachite color palette with light/dark mode, refined typography, and JSON syntax highlighting. No view overrides — Rack middleware injects theme files before `</head>`, so upstream view changes don't break the theme.
 
 ## Screenshots
 
-### Light mode
+### Jobs list
 
-#### Jobs list
-![Jobs list](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-jobs-list.png)
+| Light                                                                                                                            | Dark                                                                                                                            |
+|----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| ![](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-jobs-list.png) | ![](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-jobs-list.png) |
 
-#### Job details
-![Job page](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-job-page.png)
+### Job details
 
-#### Worker overview
-![Worker page](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-worker-page.png)
+| Light                                                                                                                           | Dark                                                                                                                           |
+|---------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| ![](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-job-page.png) | ![](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-job-page.png) |
 
-### Dark mode
+### Worker overview
 
-#### Jobs list
-![Jobs list — dark](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-jobs-list.png)
-
-#### Job details
-![Job page — dark](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-job-page.png)
-
-#### Worker overview
-![Worker page — dark](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-worker-page.png)
+| Light                                                                                                                              | Dark                                                                                                                              |
+|------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ![](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/light-worker-page.png) | ![](https://raw.githubusercontent.com/Velthorne/mission_control-jobs-theme/refs/heads/main/docs/screenshots/dark-worker-page.png) |
 
 ## Requirements
 
 - Ruby **>= 3.2**
 - Rails **>= 7.1**
 - [mission_control-jobs](https://github.com/rails/mission_control-jobs) **>= 1.1**
+- **Propshaft** or **Sprockets** (already required by `mission_control-jobs`)
 
 ## Installation
 
@@ -50,11 +47,11 @@ Then run:
 bundle install
 ```
 
-The theme is active immediately — no configuration required.
+That's it — the theme activates automatically, no configuration is required.
 
 ## How it works
 
-The gem inserts Rack middleware that intercepts HTML responses from the MissionControl::Jobs engine and injects theme stylesheets, a color scheme switcher, and optional [PrismJS](https://prismjs.com) syntax highlighting before `</head>`. Injected `<script>` tags automatically receive a CSP nonce when one is available in the request. Assets are served via `Rack::Static` independently of the host app's asset pipeline — no Propshaft or Sprockets integration required. The CSS overrides Bulma variables and component styles, so the theme stays functional even if upstream markup changes.
+Theme CSS, JS, and fonts are served through the host app's Propshaft or Sprockets load path. A Rack middleware intercepts HTML responses from `MissionControl::Jobs::Engine` and injects the asset links, a color scheme switcher, and optional [PrismJS](https://prismjs.com) syntax highlighting before `</head>` — with CSP nonces applied to `<script>` tags when available.
 
 ## Configuration
 
@@ -68,20 +65,11 @@ This creates `config/initializers/mission_control_jobs_theme.rb`:
 
 ```ruby
 MissionControl::Jobs::Theme.configure do |config|
-  # Light/dark appearance — :auto follows the OS preference, :light/:dark forces one.
-  # config.color_scheme = :auto
-
-  # Show the light/dark/auto toggle in the navbar (set false to lock the scheme).
-  # config.color_scheme_switcher = true
-
-  # Override the auto-discovered MissionControl::Jobs::Engine mount path.
-  # config.mount_path = "/jobs"
-
-  # Inject PrismJS for syntax-highlighted JSON on job detail pages.
-  # config.syntax_highlighting = true
-
-  # Visual theme family — available: malachite.
-  # config.theme = :malachite
+  # config.color_scheme = :auto          # :auto, :light, :dark
+  # config.color_scheme_switcher = true  # show navbar toggle
+  # config.mount_path = "/jobs"          # override auto-discovery
+  # config.syntax_highlighting = true    # PrismJS on job detail
+  # config.theme = :malachite            # available: :malachite
 end
 ```
 
@@ -95,14 +83,13 @@ end
 
 ## Compatibility
 
-- Designed for **MissionControl::Jobs 1.1+** which uses Bulma for its UI. The theme overrides Bulma variables and component styles.
-- Works with **Propshaft** and **Sprockets** — the gem serves its own assets via `Rack::Static` and does not depend on the host app's asset pipeline.
-- Turbo Drive and Turbo Stream responses pass through without modification.
-- Tested with **Solid Queue**. Resque should mostly work since the theme is CSS-only, but some adapter-specific views may not be fully styled yet.
+- Designed for **MissionControl::Jobs 1.1+** which uses Bulma for its UI. The theme overrides Bulma variables and component styles, so it stays functional even if upstream markup changes.
+- Works with **Propshaft** and **Sprockets** — theme assets are shipped through the host app's asset pipeline with fingerprinted URLs.
+- Tested with **Solid Queue**. **Resque** works but may have unstyled areas in adapter-specific views.
 
 ## Troubleshooting
 
-### Theme not appearing
+If the theme doesn't appear:
 
 1. Verify the middleware is loaded — check that `MissionControl::Jobs::Theme::Middleware` appears in `bin/rails middleware` output.
 2. Check mount path detection in the console:
@@ -114,14 +101,6 @@ end
    ```ruby
    mount MissionControl::Jobs::Engine, at: "/jobs"
    ```
-
-### Apps served under a sub-URI
-
-If your Rails app is deployed under a prefix such as `/internal`, the `/mission_control/...` asset URLs injected by the middleware will not include the prefix. Sub-URI support is not yet available.
-
-### Stale assets after upgrade
-
-Theme assets are served with immutable cache headers (1-year max-age). After upgrading the gem, browsers may serve stale files. Hard-refresh (`Ctrl+Shift+R`) or clear the browser cache.
 
 ## Contributing
 
@@ -138,8 +117,10 @@ bin/console               # Interactive prompt
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-This gem bundles the following third-party assets:
+### Third-party assets
 
-- [Albert Sans](https://fonts.google.com/specimen/Albert+Sans) — SIL Open Font License 1.1 (`vendor/assets/mission_control/fonts/Albert_Sans/OFL.txt`)
-- [Archivo Narrow](https://fonts.google.com/specimen/Archivo+Narrow) — SIL Open Font License 1.1 (`vendor/assets/mission_control/fonts/Archivo_Narrow/OFL.txt`)
+The gem bundles:
+
+- [Albert Sans](https://fonts.google.com/specimen/Albert+Sans) — SIL Open Font License 1.1 (`vendor/assets/fonts/mission_control/theme/Albert_Sans/OFL.txt`)
+- [Archivo Narrow](https://fonts.google.com/specimen/Archivo+Narrow) — SIL Open Font License 1.1 (`vendor/assets/fonts/mission_control/theme/Archivo_Narrow/OFL.txt`)
 - [PrismJS](https://prismjs.com) — MIT License

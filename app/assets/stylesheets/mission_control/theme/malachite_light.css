@@ -12,13 +12,13 @@
 
 @font-face {
   font-family: 'Archivo Narrow';
-  src: url('../fonts/Archivo_Narrow/ArchivoNarrow-VariableFont_wght.ttf') format('truetype');
+  src: url('Archivo_Narrow/ArchivoNarrow-VariableFont_wght.ttf') format('truetype');
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Albert Sans';
-  src: url('../fonts/Albert_Sans/AlbertSans-VariableFont_wght.ttf') format('truetype');
+  src: url('Albert_Sans/AlbertSans-VariableFont_wght.ttf') format('truetype');
   font-display: swap;
 }
 

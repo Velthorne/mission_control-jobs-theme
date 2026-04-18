@@ -17,28 +17,21 @@ module MissionControl
       # stylesheets are injected with +prefers-color-scheme+ media queries.
       # When an explicit scheme is active, only that variant's CSS is loaded.
       #
+      # Asset URLs are resolved through the Rails asset pipeline
+      # (Propshaft/Sprockets), so injected +<link>+ and +<script>+ tags use
+      # fingerprinted, cache-friendly paths that respect +config.relative_url_root+.
+      #
       # Injected +<script>+ tags automatically receive a CSP nonce when one is
       # available via +action_dispatch.content_security_policy_nonce+ in the Rack
       # env or a +<meta name="csp-nonce">+ tag in the response body.
       #
-      # @see Railtie
+      # @see Engine
       # @see RouteDiscovery
-      #
-      # @example Manual Rack usage (typically wired by {Railtie})
-      #   config = MissionControl::Jobs::Theme::Configuration.new
-      #   config.color_scheme = :dark
-      #   config.syntax_highlighting = false
-      #
-      #   use MissionControl::Jobs::Theme::Middleware, mount_path: "/admin/jobs", config: config
       class Middleware
-        NONCE_PLACEHOLDER = "THEME_NONCE"
-        NONCE_ATTR = " nonce=\"#{NONCE_PLACEHOLDER}\"".freeze
-
         # @param app [#call] the next Rack application in the middleware stack
         # @param mount_path [String] engine mount path to match against requests
-        # @param config [Configuration] theme configuration (defaults to current
-        #   global configuration)
-        def initialize(app, mount_path: RouteDiscovery::FALLBACK, config: Configuration.new)
+        # @param config [Configuration] theme configuration
+        def initialize(app, config:, mount_path: RouteDiscovery::FALLBACK)
           @app = app
           @mount_path = mount_path
           @mount_path_prefix = "#{mount_path}/"
@@ -46,12 +39,8 @@ module MissionControl
           @default_color_scheme = config.color_scheme
           @syntax_highlighting = config.syntax_highlighting
           @color_scheme_switcher = config.color_scheme_switcher
-          @injections =
-            (Configuration::COLOR_SCHEMES + [:auto]).to_h { |scheme| [scheme, build_injection(scheme)] }
         end
 
-        # Process a Rack request, injecting theme assets into matching HTML responses.
-        #
         # @param env [Hash] Rack environment hash
         # @return [Array(Integer, Hash, #each)] Rack-compatible response triplet
         def call(env)
@@ -64,7 +53,7 @@ module MissionControl
 
             scheme = resolve_color_scheme(env)
             nonce = resolve_csp_nonce(env, body)
-            injection = @injections[scheme].gsub(nonce ? NONCE_PLACEHOLDER : NONCE_ATTR, nonce || "")
+            injection = build_injection(scheme, nonce)
 
             body.sub!("</head>", injection)
             headers["content-length"] = body.bytesize.to_s if headers.key?("content-length")
@@ -120,37 +109,39 @@ module MissionControl
           full_path == @mount_path || full_path.start_with?(@mount_path_prefix)
         end
 
-        def build_injection(color_scheme)
+        def build_injection(color_scheme, nonce)
           auto = color_scheme == :auto
           schemes = auto ? Configuration::COLOR_SCHEMES : [color_scheme]
 
           # Theme stylesheets
           parts =
             schemes.map do |scheme|
-              stylesheet_tag("/mission_control/css/#{@theme}_#{scheme}.min.css", scheme: (scheme if auto))
+              stylesheet_tag(asset_path("mission_control/theme/#{@theme}_#{scheme}.min.css"), scheme: (scheme if auto))
             end
 
           # Prism.js syntax highlighting (CSS + JS)
-          syntax_highlighting_tags(schemes, auto:, into: parts) if @syntax_highlighting
+          syntax_highlighting_tags(schemes, auto:, nonce:, into: parts) if @syntax_highlighting
 
           # Client-side color scheme switcher (auto / light / dark)
-          parts << color_scheme_switcher_tag if @color_scheme_switcher
+          parts << color_scheme_switcher_tag(nonce) if @color_scheme_switcher
 
-          "#{parts.join("\n")}</head>".freeze
+          "#{parts.join("\n")}</head>"
         end
 
-        def syntax_highlighting_tags(schemes, auto:, into:)
+        def syntax_highlighting_tags(schemes, auto:, nonce:, into:)
           schemes.each do |scheme|
             prism_theme = scheme == :dark ? "tomorrow" : "default"
-            into << stylesheet_tag("/mission_control/css/prism.#{prism_theme}.min.css", scheme: (scheme if auto))
+            href = asset_path("mission_control/theme/prism.#{prism_theme}.min.css")
+            into << stylesheet_tag(href, scheme: (scheme if auto))
           end
-          into << script_tag("/mission_control/js/prism.min.js", extra: "data-manual")
-          into << script_tag("/mission_control/js/prism-init.js")
+          into << script_tag(asset_path("mission_control/theme/prism.min.js"), nonce:, extra: "data-manual")
+          into << script_tag(asset_path("mission_control/theme/prism-init.js"), nonce:)
         end
 
-        def script_tag(src, extra: nil)
+        def script_tag(src, nonce:, extra: nil)
           extra_attrs = extra ? " #{extra}" : ""
-          %(<script src="#{src}"#{extra_attrs}#{NONCE_ATTR}></script>)
+          nonce_attr = nonce ? %( nonce="#{nonce}") : ""
+          %(<script src="#{src}"#{extra_attrs}#{nonce_attr}></script>)
         end
 
         def stylesheet_tag(href, scheme: nil)
@@ -158,12 +149,17 @@ module MissionControl
           %(<link rel="stylesheet" href="#{href}"#{media_attr}>)
         end
 
-        def color_scheme_switcher_tag
+        def color_scheme_switcher_tag(nonce)
           script_tag(
-            "/mission_control/js/color-scheme-switcher.js",
+            asset_path("mission_control/theme/color-scheme-switcher.js"),
+            nonce:,
             extra: "data-default-color-scheme=\"#{@default_color_scheme}\" " \
                    "data-cookie-name=\"#{Configuration::COOKIE_NAME}\""
           )
+        end
+
+        def asset_path(logical_path)
+          ActionController::Base.helpers.asset_path(logical_path)
         end
       end
     end

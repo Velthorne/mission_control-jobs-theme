@@ -2,17 +2,9 @@
 
 require_relative "../../../support/dummy/config/application"
 
-RSpec.describe MissionControl::Jobs::Theme::Railtie do
+RSpec.describe MissionControl::Jobs::Theme::Engine do
   before do
     Dummy::Application.initialize! unless Dummy::Application.initialized?
-  end
-
-  it "inserts Rack::Static before Theme::Middleware in the middleware stack" do
-    middleware_classes = Dummy::Application.middleware.map(&:klass)
-    static_index = middleware_classes.index(Rack::Static)
-    theme_index = middleware_classes.index(MissionControl::Jobs::Theme::Middleware)
-
-    expect(static_index).to be < theme_index
   end
 
   it "runs after load_config_initializers to respect user configuration" do

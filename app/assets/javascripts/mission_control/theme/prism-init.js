@@ -1,4 +1,19 @@
+/**
+ * Initialise Prism.js syntax highlighting for JSON payloads rendered by
+ * Mission Control Jobs.
+ *
+ * Runs on every +turbo:load+ event and upgrades +<pre>+ blocks whose content
+ * starts with +{+ or +[+ to highlighted JSON.
+ */
 (function() {
+  /**
+   * Highlight JSON-looking +<pre>+ blocks in the current document.
+   *
+   * No-op when Prism or the JSON grammar is not loaded yet. Idempotent — skips
+   * elements already tagged with the +language-json+ class.
+   *
+   * @returns {void}
+   */
   function highlightJson() {
     if (typeof Prism === 'undefined' || !Prism.languages.json) return;
     document.querySelectorAll('pre:not(.language-json)').forEach(function(pre) {

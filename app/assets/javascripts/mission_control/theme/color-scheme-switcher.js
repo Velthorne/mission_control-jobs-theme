@@ -1,9 +1,26 @@
+/**
+ * Inject a color-scheme switcher dropdown into the Mission Control Jobs
+ * navbar and persist the user's choice via cookie.
+ *
+ * The script element carries two data attributes that parameterise behaviour:
+ * - +data-cookie-name+ — cookie key used for persistence
+ * - +data-default-color-scheme+ — scheme applied when no cookie is present
+ *
+ * Selecting +auto+ clears the cookie so the server-side default (typically
+ * honouring +prefers-color-scheme+) takes over.
+ */
 (function() {
   var scriptTag = document.querySelector('script[src$="color-scheme-switcher.js"]');
   var COOKIE_NAME = scriptTag && scriptTag.getAttribute('data-cookie-name') || 'mc_jobs_color_scheme';
   var DEFAULT_COLOR_SCHEME = scriptTag && scriptTag.getAttribute('data-default-color-scheme') || 'auto';
   var COOKIE_REGEXP = new RegExp('(?:^|; )' + COOKIE_NAME + '=([^;]*)');
 
+  /**
+   * Inline SVG icons keyed by scheme name, rendered inside the dropdown
+   * trigger and menu items.
+   *
+   * @type {Object<string, string>}
+   */
   const SCHEME_ICONS = {
     auto: '<svg width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor">' +
       '<path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM2 8a6 6 0 0 1 6-6v12a6 6 0 0 1-6-6z"/></svg>',
@@ -27,29 +44,64 @@
       '-.258c.346-.115.617-.386.732-.732z"/></svg>'
   };
 
+  /**
+   * Schemes offered in the dropdown, in presentation order.
+   *
+   * @type {string[]}
+   */
   const SCHEMES = ['auto', 'light', 'dark'];
 
+  /**
+   * @param {string} str - Input string
+   * @returns {string} +str+ with its first character uppercased
+   */
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
+  /**
+   * @returns {string|null} Stored scheme name, or +null+ when no cookie is set
+   */
   function getCookieScheme() {
     const match = document.cookie.match(COOKIE_REGEXP);
     return match ? match[1] : null;
   }
 
+  /**
+   * Persist a color scheme choice for one year.
+   *
+   * @param {string} value - Scheme name to persist (+light+ or +dark+)
+   * @returns {void}
+   */
   function setCookieScheme(value) {
     document.cookie = COOKIE_NAME + '=' + value + '; path=/; max-age=31536000; SameSite=Lax';
   }
 
+  /**
+   * Remove the persisted color scheme cookie, reverting to the default.
+   *
+   * @returns {void}
+   */
   function clearCookieScheme() {
     document.cookie = COOKIE_NAME + '=; path=/; max-age=0; SameSite=Lax';
   }
 
+  /**
+   * Resolve the active scheme, preferring the cookie over the configured default.
+   *
+   * @returns {string} Active scheme name (+auto+, +light+, or +dark+)
+   */
   function currentMode() {
     return getCookieScheme() || DEFAULT_COLOR_SCHEME;
   }
 
+  /**
+   * Persist the requested scheme and reload so the server re-renders with
+   * matching stylesheets. No-op when the requested scheme already matches.
+   *
+   * @param {string} scheme - Target scheme (+auto+, +light+, or +dark+)
+   * @returns {void}
+   */
   function applyScheme(scheme) {
     if (scheme === currentMode()) return;
 
@@ -61,6 +113,14 @@
     location.reload();
   }
 
+  /**
+   * Build the switcher dropdown and append it to the navbar.
+   *
+   * Idempotent — aborts when the navbar is missing or the switcher is already
+   * present (e.g. after a Turbo navigation that preserves the element).
+   *
+   * @returns {void}
+   */
   function init() {
     const navbarEnd = document.querySelector('.navbar-end');
     if (!navbarEnd || navbarEnd.querySelector('.mc-scheme-switcher')) return;

@@ -9,8 +9,10 @@ module MissionControl
       # Falls back to {FALLBACK} when the engine is not loaded or no matching
       # route is found.
       #
-      # @see Railtie
+      # @see Engine
       module RouteDiscovery
+        # Default mount path used when the engine is not loaded or cannot be
+        # located in the route set.
         FALLBACK = "/jobs"
 
         # Inspect the application route set for a mounted Mission Control Jobs
@@ -18,9 +20,6 @@ module MissionControl
         #
         # @param routes [ActionDispatch::Routing::RouteSet] the application route set
         # @return [String] the engine mount path, or {FALLBACK} if not found
-        #
-        # @example
-        #   RouteDiscovery.discover(Rails.application.routes) #=> "/admin/jobs"
         def self.discover(routes)
           engine = defined?(MissionControl::Jobs::Engine) ? MissionControl::Jobs::Engine : nil
           return FALLBACK unless engine

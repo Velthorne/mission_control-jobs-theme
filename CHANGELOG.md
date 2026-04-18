@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Migrate theme assets from `Rack::Static` to the Rails asset pipeline (adds sub-URI deployment support, fixes stale assets after gem upgrade)
+
 ## [0.3.2] - 2026-04-18
 
 - Automatic CSP nonce support for injected script tags

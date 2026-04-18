@@ -9,19 +9,12 @@ module MissionControl
       class Configuration
         # Available theme families. Each entry must have matching
         # +{name}_light.min.css+ and +{name}_dark.min.css+ files under
-        # +assets/mission_control/css/+.
+        # +app/assets/stylesheets/mission_control/theme/+.
         THEMES = %i[malachite].freeze
 
-        # Available color scheme preferences.
         COLOR_SCHEMES = %i[light dark].freeze
-
-        # Cookie name used to persist the user's color scheme preference.
         COOKIE_NAME = "mc_jobs_color_scheme"
-
-        # @return [Symbol] the default theme family
         DEFAULT_THEME = :malachite
-
-        # @return [Symbol] the default color scheme
         DEFAULT_COLOR_SCHEME = :auto
 
         # @return [Symbol] the active color scheme (+:auto+, +:light+, or +:dark+).
@@ -58,6 +51,7 @@ module MissionControl
         #
         # @param value [Symbol, String] color scheme (converted to Symbol)
         # @raise [MissionControl::Jobs::Theme::Error] if the color scheme is not recognized
+        # @return [Symbol] the assigned color scheme
         def color_scheme=(value)
           value = value&.to_sym
 
@@ -74,6 +68,7 @@ module MissionControl
         #
         # @param value [Symbol, String] theme family identifier (converted to Symbol)
         # @raise [MissionControl::Jobs::Theme::Error] if the theme is not recognized
+        # @return [Symbol] the assigned theme family
         def theme=(value)
           value = value&.to_sym
 
