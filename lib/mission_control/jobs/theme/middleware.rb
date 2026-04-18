@@ -120,7 +120,7 @@ module MissionControl
             into << stylesheet_tag(href, scheme: (scheme if auto))
           end
           into << script_tag(asset_path("mission_control/theme/prism.min.js"), nonce:, extra: "data-manual")
-          into << script_tag(asset_path("mission_control/theme/prism-init.js"), nonce:)
+          into << script_tag(asset_path("mission_control/theme/prism-init.min.js"), nonce:)
         end
 
         def script_tag(src, nonce:, extra: nil)
@@ -136,7 +136,7 @@ module MissionControl
 
         def color_scheme_switcher_tag(nonce)
           script_tag(
-            asset_path("mission_control/theme/color-scheme-switcher.js"),
+            asset_path("mission_control/theme/color-scheme-switcher.min.js"),
             nonce:,
             extra: "data-default-color-scheme=\"#{@default_color_scheme}\" " \
                    "data-cookie-name=\"#{Configuration::COOKIE_NAME}\""

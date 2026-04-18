@@ -27,10 +27,12 @@ Gem::Specification.new do |spec|
   spec.files =
     IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
       theme_css_dir = "app/assets/stylesheets/mission_control/theme/"
+      theme_js_dir = "app/assets/javascripts/mission_control/theme/"
       ls.readlines("\x0", chomp: true).reject do |f|
         (f == gemspec) ||
-          f.start_with?(*%w[bin/ test/ spec/ features/ docs/ .git .rspec .rubocop appveyor Gemfile Rakefile]) ||
-          (f.start_with?(theme_css_dir) && f.end_with?(".css") && !f.end_with?(".min.css"))
+          f.start_with?(*%w[bin/ test/ spec/ features/ docs/ .git .rspec .rubocop appveyor Gemfile Rakefile package]) ||
+          (f.start_with?(theme_css_dir) && f.end_with?(".css") && !f.end_with?(".min.css")) ||
+          (f.start_with?(theme_js_dir) && f.end_with?(".js") && !f.end_with?(".min.js"))
       end
     end
   spec.require_paths = ["lib"]

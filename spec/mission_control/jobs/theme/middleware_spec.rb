@@ -11,27 +11,23 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     "<!DOCTYPE html><html><head><title>MC</title></head><body>OK</body></html>"
   end
 
-  def asset_url(logical_path)
-    ActionController::Base.helpers.asset_path(logical_path)
+  def theme_asset_url(filename)
+    ActionController::Base.helpers.asset_path("mission_control/theme/#{filename}")
   end
 
-  def css_logical(name)
-    "mission_control/theme/#{name}.min.css"
-  end
-
-  def js_logical(name)
-    "mission_control/theme/#{name}.js"
-  end
-
-  def stylesheet_tag(logical, scheme: nil)
+  def stylesheet_tag(filename, scheme: nil)
     media = scheme ? %( media="(prefers-color-scheme: #{scheme})") : ""
-    %(<link rel="stylesheet" href="#{asset_url(logical)}"#{media}>)
+    %(<link rel="stylesheet" href="#{theme_asset_url(filename)}"#{media}>)
   end
 
-  def script_tag(logical, extra: nil, nonce: nil)
+  def script_tag(filename, extra: nil, nonce: nil)
     extra_attr = extra ? " #{extra}" : ""
     nonce_attr = nonce ? %( nonce="#{nonce}") : ""
-    %(<script src="#{asset_url(logical)}"#{extra_attr}#{nonce_attr}></script>)
+    %(<script src="#{theme_asset_url(filename)}"#{extra_attr}#{nonce_attr}></script>)
+  end
+
+  def switcher_attrs(default_scheme)
+    %(data-default-color-scheme="#{default_scheme}" data-cookie-name="mc_jobs_color_scheme")
   end
 
   def build_config(**overrides)
@@ -58,14 +54,13 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, headers, body = request(app)
       result = body.join
       expect(result).to include(
-        stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
-        stylesheet_tag(css_logical("malachite_dark"), scheme: "dark"),
-        stylesheet_tag("mission_control/theme/prism.default.min.css", scheme: "light"),
-        stylesheet_tag("mission_control/theme/prism.tomorrow.min.css", scheme: "dark"),
-        script_tag(js_logical("prism.min"), extra: "data-manual"),
-        script_tag(js_logical("prism-init")),
-        %(src="#{asset_url(js_logical("color-scheme-switcher"))}" data-default-color-scheme="auto"),
-        'data-cookie-name="mc_jobs_color_scheme"'
+        stylesheet_tag("malachite_light.min.css", scheme: "light"),
+        stylesheet_tag("malachite_dark.min.css", scheme: "dark"),
+        stylesheet_tag("prism.default.min.css", scheme: "light"),
+        stylesheet_tag("prism.tomorrow.min.css", scheme: "dark"),
+        script_tag("prism.min.js", extra: "data-manual"),
+        script_tag("prism-init.min.js"),
+        script_tag("color-scheme-switcher.min.js", extra: switcher_attrs("auto"))
       )
       expect(headers["content-length"]).to eq(result.bytesize.to_s)
     end
@@ -75,9 +70,9 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, _, body = request(app)
       result = body.join
       expect(result).to include(
-        stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
-        stylesheet_tag(css_logical("malachite_dark"), scheme: "dark"),
-        %(src="#{asset_url(js_logical("color-scheme-switcher"))}" data-default-color-scheme="auto")
+        stylesheet_tag("malachite_light.min.css", scheme: "light"),
+        stylesheet_tag("malachite_dark.min.css", scheme: "dark"),
+        script_tag("color-scheme-switcher.min.js", extra: switcher_attrs("auto"))
       )
       expect(result).not_to include("prism")
     end
@@ -90,11 +85,11 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, headers, body = request(app)
       result = body.join
       expect(result).to include(
-        stylesheet_tag(css_logical("malachite_light")),
-        stylesheet_tag("mission_control/theme/prism.default.min.css"),
-        script_tag(js_logical("prism.min"), extra: "data-manual"),
-        script_tag(js_logical("prism-init")),
-        %(src="#{asset_url(js_logical("color-scheme-switcher"))}" data-default-color-scheme="light")
+        stylesheet_tag("malachite_light.min.css"),
+        stylesheet_tag("prism.default.min.css"),
+        script_tag("prism.min.js", extra: "data-manual"),
+        script_tag("prism-init.min.js"),
+        script_tag("color-scheme-switcher.min.js", extra: switcher_attrs("light"))
       )
       expect(result).not_to include("malachite_dark", "prism.tomorrow")
       expect(headers["content-length"]).to eq(result.bytesize.to_s)
@@ -105,9 +100,9 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, _, body = request(app)
       result = body.join
       expect(result).to include(
-        stylesheet_tag(css_logical("malachite_dark")),
-        stylesheet_tag("mission_control/theme/prism.tomorrow.min.css"),
-        %(src="#{asset_url(js_logical("color-scheme-switcher"))}" data-default-color-scheme="dark")
+        stylesheet_tag("malachite_dark.min.css"),
+        stylesheet_tag("prism.tomorrow.min.css"),
+        script_tag("color-scheme-switcher.min.js", extra: switcher_attrs("dark"))
       )
       expect(result).not_to include("malachite_light", "prism.default")
     end
@@ -116,7 +111,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       app = build_app(config: build_config(color_scheme: :light, syntax_highlighting: false))
       _, _, body = request(app)
       result = body.join
-      expect(result).to include(stylesheet_tag(css_logical("malachite_light")))
+      expect(result).to include(stylesheet_tag("malachite_light.min.css"))
       expect(result).not_to include("prism", "malachite_dark")
     end
   end
@@ -127,9 +122,9 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, _, body = request(app, cookie: "dark")
       result = body.join
       expect(result).to include(
-        stylesheet_tag(css_logical("malachite_dark")),
-        stylesheet_tag("mission_control/theme/prism.tomorrow.min.css"),
-        %(src="#{asset_url(js_logical("color-scheme-switcher"))}" data-default-color-scheme="auto")
+        stylesheet_tag("malachite_dark.min.css"),
+        stylesheet_tag("prism.tomorrow.min.css"),
+        script_tag("color-scheme-switcher.min.js", extra: switcher_attrs("auto"))
       )
       expect(result).not_to include("malachite_light", "prism.default", "prefers-color-scheme")
     end
@@ -138,7 +133,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       app = build_app(config: build_config(color_scheme: :light))
       _, _, body = request(app, cookie: "dark")
       result = body.join
-      expect(result).to include(stylesheet_tag(css_logical("malachite_dark")))
+      expect(result).to include(stylesheet_tag("malachite_dark.min.css"))
       expect(result).not_to include("malachite_light")
     end
 
@@ -147,8 +142,8 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, _, body = request(app, cookie: "bogus")
       result = body.join
       expect(result).to include(
-        stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
-        stylesheet_tag(css_logical("malachite_dark"), scheme: "dark")
+        stylesheet_tag("malachite_light.min.css", scheme: "light"),
+        stylesheet_tag("malachite_dark.min.css", scheme: "dark")
       )
     end
 
@@ -157,8 +152,8 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, _, body = request(app, cookie: "auto")
       result = body.join
       expect(result).to include(
-        stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
-        stylesheet_tag(css_logical("malachite_dark"), scheme: "dark")
+        stylesheet_tag("malachite_light.min.css", scheme: "light"),
+        stylesheet_tag("malachite_dark.min.css", scheme: "dark")
       )
     end
 
@@ -167,7 +162,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       env = { "HTTP_COOKIE" => "session=abc123; mc_jobs_color_scheme=light; other=val" }
       _, _, body = app.call(env)
       result = body.join
-      expect(result).to include(stylesheet_tag(css_logical("malachite_light")))
+      expect(result).to include(stylesheet_tag("malachite_light.min.css"))
       expect(result).not_to include("malachite_dark")
     end
   end
@@ -178,13 +173,10 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       _, headers, body = request(app, csp_nonce: "test123")
       result = body.join
 
-      switcher_url = asset_url(js_logical("color-scheme-switcher"))
-      switcher_attrs = 'data-default-color-scheme="auto" data-cookie-name="mc_jobs_color_scheme" nonce="test123"'
-      switcher_fragment = %(src="#{switcher_url}" #{switcher_attrs})
       expect(result).to include(
-        script_tag(js_logical("prism.min"), extra: "data-manual", nonce: "test123"),
-        script_tag(js_logical("prism-init"), nonce: "test123"),
-        switcher_fragment
+        script_tag("prism.min.js", extra: "data-manual", nonce: "test123"),
+        script_tag("prism-init.min.js", nonce: "test123"),
+        script_tag("color-scheme-switcher.min.js", extra: switcher_attrs("auto"), nonce: "test123")
       )
       expect(result).not_to match(/<link[^>]*nonce/)
       expect(headers["content-length"]).to eq(result.bytesize.to_s)

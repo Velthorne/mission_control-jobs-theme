@@ -10,7 +10,7 @@
  * honouring +prefers-color-scheme+) takes over.
  */
 (function() {
-  var scriptTag = document.querySelector('script[src$="color-scheme-switcher.js"]');
+  var scriptTag = document.currentScript;
   var COOKIE_NAME = scriptTag && scriptTag.getAttribute('data-cookie-name') || 'mc_jobs_color_scheme';
   var DEFAULT_COLOR_SCHEME = scriptTag && scriptTag.getAttribute('data-default-color-scheme') || 'auto';
   var COOKIE_REGEXP = new RegExp('(?:^|; )' + COOKIE_NAME + '=([^;]*)');

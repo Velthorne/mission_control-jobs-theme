@@ -1,0 +1,8 @@
+{
+  "name": "mission_control-jobs-theme",
+  "private": true,
+  "description": "Build-time tooling for minifying theme CSS and JS. Not shipped in the gem.",
+  "devDependencies": {
+    "esbuild": "~0.28.0"
+  }
+}
