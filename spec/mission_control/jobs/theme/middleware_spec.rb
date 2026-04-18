@@ -40,13 +40,13 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     end
   end
 
-  def build_app(status: 200, headers: { "content-type" => "text/html" }, body: html, config: build_config, **opts)
+  def build_app(status: 200, headers: { "content-type" => "text/html" }, body: html, config: build_config)
     inner = ->(_env) { [status, headers, [body]] }
-    described_class.new(inner, config:, **opts)
+    described_class.new(inner, config:)
   end
 
-  def request(app, script_name: "", path: "/", cookie: nil, csp_nonce: nil)
-    env = { "SCRIPT_NAME" => script_name, "PATH_INFO" => path }
+  def request(app, cookie: nil, csp_nonce: nil)
+    env = {}
     env["HTTP_COOKIE"] = "#{MissionControl::Jobs::Theme::Configuration::COOKIE_NAME}=#{cookie}" if cookie
     env["action_dispatch.content_security_policy_nonce"] = csp_nonce if csp_nonce
     app.call(env)
@@ -55,7 +55,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
   context "with auto color scheme (default, no cookie)" do
     it "injects both light and dark stylesheets with prefers-color-scheme media queries" do
       app = build_app(headers: { "content-type" => "text/html", "content-length" => html.bytesize.to_s })
-      _, headers, body = request(app, script_name: "/jobs")
+      _, headers, body = request(app)
       result = body.join
       expect(result).to include(
         stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
@@ -72,7 +72,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     it "omits PrismJS when syntax_highlighting is disabled" do
       app = build_app(config: build_config(syntax_highlighting: false))
-      _, _, body = request(app, script_name: "/jobs")
+      _, _, body = request(app)
       result = body.join
       expect(result).to include(
         stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
@@ -87,7 +87,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     it "loads only the light variant when configured" do
       app = build_app(config: build_config(color_scheme: :light),
                       headers: { "content-type" => "text/html", "content-length" => html.bytesize.to_s })
-      _, headers, body = request(app, script_name: "/jobs")
+      _, headers, body = request(app)
       result = body.join
       expect(result).to include(
         stylesheet_tag(css_logical("malachite_light")),
@@ -102,7 +102,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     it "loads only the dark variant when configured" do
       app = build_app(config: build_config(color_scheme: :dark))
-      _, _, body = request(app, script_name: "/jobs")
+      _, _, body = request(app)
       result = body.join
       expect(result).to include(
         stylesheet_tag(css_logical("malachite_dark")),
@@ -114,7 +114,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     it "omits PrismJS when syntax_highlighting is disabled" do
       app = build_app(config: build_config(color_scheme: :light, syntax_highlighting: false))
-      _, _, body = request(app, script_name: "/jobs")
+      _, _, body = request(app)
       result = body.join
       expect(result).to include(stylesheet_tag(css_logical("malachite_light")))
       expect(result).not_to include("prism", "malachite_dark")
@@ -124,7 +124,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
   context "with cookie-based color scheme override" do
     it "loads only the cookie scheme, overriding auto default" do
       app = build_app
-      _, _, body = request(app, script_name: "/jobs", cookie: "dark")
+      _, _, body = request(app, cookie: "dark")
       result = body.join
       expect(result).to include(
         stylesheet_tag(css_logical("malachite_dark")),
@@ -136,7 +136,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     it "overrides an explicit configured scheme with the cookie value" do
       app = build_app(config: build_config(color_scheme: :light))
-      _, _, body = request(app, script_name: "/jobs", cookie: "dark")
+      _, _, body = request(app, cookie: "dark")
       result = body.join
       expect(result).to include(stylesheet_tag(css_logical("malachite_dark")))
       expect(result).not_to include("malachite_light")
@@ -144,7 +144,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     it "ignores invalid cookie values and falls back to default" do
       app = build_app
-      _, _, body = request(app, script_name: "/jobs", cookie: "bogus")
+      _, _, body = request(app, cookie: "bogus")
       result = body.join
       expect(result).to include(
         stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
@@ -154,7 +154,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     it "treats cookie value 'auto' as invalid and falls back to default" do
       app = build_app
-      _, _, body = request(app, script_name: "/jobs", cookie: "auto")
+      _, _, body = request(app, cookie: "auto")
       result = body.join
       expect(result).to include(
         stylesheet_tag(css_logical("malachite_light"), scheme: "light"),
@@ -164,8 +164,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
 
     it "reads cookie from a multi-cookie header" do
       app = build_app
-      env = { "SCRIPT_NAME" => "/jobs", "PATH_INFO" => "/",
-              "HTTP_COOKIE" => "session=abc123; mc_jobs_color_scheme=light; other=val" }
+      env = { "HTTP_COOKIE" => "session=abc123; mc_jobs_color_scheme=light; other=val" }
       _, _, body = app.call(env)
       result = body.join
       expect(result).to include(stylesheet_tag(css_logical("malachite_light")))
@@ -176,7 +175,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
   context "with CSP nonce" do
     it "adds nonce from env to script tags but not stylesheet links, and updates content-length" do
       app = build_app(headers: { "content-type" => "text/html", "content-length" => html.bytesize.to_s })
-      _, headers, body = request(app, script_name: "/jobs", csp_nonce: "test123")
+      _, headers, body = request(app, csp_nonce: "test123")
       result = body.join
 
       switcher_url = asset_url(js_logical("color-scheme-switcher"))
@@ -195,7 +194,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       html_with_meta = '<!DOCTYPE html><html><head><meta name="csp-nonce" content="xBf3+9/Rq=">' \
                        "<title>MC</title></head><body>OK</body></html>"
       app = build_app(body: html_with_meta)
-      _, _, body = request(app, script_name: "/jobs")
+      _, _, body = request(app)
 
       expect(body.join).to include('nonce="xBf3+9/Rq="')
     end
@@ -204,14 +203,14 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       html_with_meta = '<!DOCTYPE html><html><head><meta name="csp-nonce" content="fromMeta">' \
                        "<title>MC</title></head><body>OK</body></html>"
       app = build_app(body: html_with_meta)
-      result = request(app, script_name: "/jobs", csp_nonce: "fromEnv").last.join
+      result = request(app, csp_nonce: "fromEnv").last.join
 
       expect(result).to include('nonce="fromEnv"')
       expect(result).not_to include('nonce="fromMeta"')
     end
 
     it "omits nonce attribute when no nonce source is available" do
-      _, _, body = request(build_app, script_name: "/jobs")
+      _, _, body = request(build_app)
 
       expect(body.join).not_to include("nonce")
     end
@@ -220,84 +219,60 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
   context "with color_scheme_switcher disabled" do
     it "omits the color-scheme-switcher script" do
       app = build_app(config: build_config(color_scheme_switcher: false))
-      _, _, body = request(app, script_name: "/jobs")
+      _, _, body = request(app)
 
       expect(body.join).not_to include("color-scheme-switcher")
     end
   end
 
   it "does not add content-length when upstream omits it" do
-    _, headers, = request(build_app, script_name: "/jobs")
+    _, headers, = request(build_app)
 
     expect(headers).not_to have_key("content-length")
   end
 
-  it "injects for nested engine paths like /jobs/queues" do
-    _, _, body = request(build_app, script_name: "/jobs", path: "/queues")
-
-    expect(body.join).to include("malachite_light")
-  end
-
   it "injects when content-type includes charset" do
     app = build_app(headers: { "content-type" => "text/html; charset=utf-8" })
-    _, _, body = request(app, script_name: "/jobs")
+    _, _, body = request(app)
 
     expect(body.join).to include("malachite_light")
-  end
-
-  it "passes through non-matching paths unchanged" do
-    _, _, body = request(build_app, path: "/admin")
-    expect(body.join).to eq(html)
-
-    _, _, body = request(build_app, path: "/jobsxyz")
-    expect(body.join).to eq(html)
   end
 
   it "passes through responses without content-type header unchanged" do
     app = build_app(headers: {}, body: html)
-    _, _, body = request(app, script_name: "/jobs")
+    _, _, body = request(app)
 
     expect(body.join).to eq(html)
   end
 
-  it "passes through non-HTML content types at /jobs unchanged" do
+  it "passes through non-HTML content types unchanged" do
     app = build_app(headers: { "content-type" => "application/json" }, body: '{"ok":true}')
-    _, _, body = request(app, script_name: "/jobs")
+    _, _, body = request(app)
 
     expect(body.join).to eq('{"ok":true}')
   end
 
-  it "passes through non-200 responses at /jobs unchanged" do
+  it "passes through non-200 responses unchanged" do
     app = build_app(status: 302, body: "")
-    _, _, body = request(app, script_name: "/jobs")
+    _, _, body = request(app)
 
     expect(body.join).to eq("")
   end
 
   it "handles body without </head> gracefully (no theme CSS injected)" do
     app = build_app(body: "<html><body>No head</body></html>")
-    _, _, body = request(app, script_name: "/jobs")
+    _, _, body = request(app)
 
     expect(body.join).not_to include("malachite_light")
   end
 
   it "only injects link/script tags — no other HTML modifications" do
     app = build_app(body: '<html><head></head><body><a href="/x">Jobs (5)</a></body></html>')
-    _, _, body = request(app, script_name: "/jobs")
+    _, _, body = request(app)
     result = body.join
 
     expect(result).not_to include("mc-tab-count")
     expect(result).to include('<a href="/x">Jobs (5)</a>')
-  end
-
-  it "respects a custom mount_path and ignores the default" do
-    app = build_app(mount_path: "/admin/jobs")
-
-    _, _, body = request(app, script_name: "/admin/jobs")
-    expect(body.join).to include("malachite_light")
-
-    _, _, body = request(app, script_name: "/jobs")
-    expect(body.join).to eq(html)
   end
 
   it "closes the response body after consuming it" do
@@ -305,7 +280,7 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     inner = ->(_env) { [200, { "content-type" => "text/html" }, body_io] }
     app = described_class.new(inner, config: build_config)
 
-    app.call("SCRIPT_NAME" => "/jobs", "PATH_INFO" => "/")
+    app.call({})
 
     expect(body_io).to be_closed
   end
@@ -314,14 +289,14 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     parts = ["<html><head>", "</head><body>OK</body></html>"]
     inner = ->(_env) { [200, { "content-type" => "text/html" }, parts] }
     app = described_class.new(inner, config: build_config)
-    _, _, body = app.call("SCRIPT_NAME" => "/jobs", "PATH_INFO" => "/")
+    _, _, body = app.call({})
 
     expect(body.join).to include("malachite_light")
   end
 
-  it "passes through Turbo Stream responses at /jobs unchanged" do
+  it "passes through Turbo Stream responses unchanged" do
     app = build_app(headers: { "content-type" => "text/vnd.turbo-stream.html" })
-    _, _, body = request(app, script_name: "/jobs")
+    _, _, body = request(app)
 
     expect(body.join).to eq(html)
   end

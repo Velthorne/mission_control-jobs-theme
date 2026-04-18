@@ -3,7 +3,6 @@
 require_relative "theme/version"
 require_relative "theme/configuration"
 require_relative "theme/middleware"
-require_relative "theme/route_discovery"
 
 module MissionControl
   module Jobs
@@ -21,7 +20,6 @@ module MissionControl
     #   MissionControl::Jobs::Theme.configure do |config|
     #     config.theme = :malachite
     #     config.color_scheme = :auto
-    #     config.mount_path = "/admin/jobs"
     #     config.syntax_highlighting = false
     #   end
     module Theme

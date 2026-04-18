@@ -8,8 +8,7 @@ module MissionControl
       # Intercept HTML responses from the Mission Control Jobs engine and inject
       # theme CSS and optional Prism.js syntax highlighting before +</head>+.
       #
-      # Only rewrites responses that match the engine mount path and have an
-      # +text/html+ content type.
+      # Only rewrites +200+ responses with a +text/html+ content type.
       #
       # The color scheme is resolved per-request: a +mc_jobs_color_scheme+ cookie
       # (set by the client-side color scheme switcher) takes precedence over the configured
@@ -26,15 +25,11 @@ module MissionControl
       # env or a +<meta name="csp-nonce">+ tag in the response body.
       #
       # @see Engine
-      # @see RouteDiscovery
       class Middleware
         # @param app [#call] the next Rack application in the middleware stack
-        # @param mount_path [String] engine mount path to match against requests
         # @param config [Configuration] theme configuration
-        def initialize(app, config:, mount_path: RouteDiscovery::FALLBACK)
+        def initialize(app, config:)
           @app = app
-          @mount_path = mount_path
-          @mount_path_prefix = "#{mount_path}/"
           @theme = config.theme
           @default_color_scheme = config.color_scheme
           @syntax_highlighting = config.syntax_highlighting
@@ -46,7 +41,7 @@ module MissionControl
         def call(env)
           status, headers, response = @app.call(env)
 
-          if inject_theme?(env, status, headers)
+          if inject_theme?(status, headers)
             body = +""
             response.each { |part| body << part }
             response.close if response.respond_to?(:close)
@@ -92,21 +87,11 @@ module MissionControl
 
         # Determine whether the response should receive theme injection.
         #
-        # Matches when the request path falls under the engine mount path, the
-        # status is 200, and the content type is +text/html+. Accounts for
-        # +SCRIPT_NAME+ to support sub-URI deployments.
-        #
-        # @param env [Hash] Rack environment hash
         # @param status [Integer] HTTP response status code
         # @param headers [Hash] HTTP response headers
         # @return [Boolean]
-        def inject_theme?(env, status, headers)
-          return false unless status == 200
-          return false unless headers["content-type"]&.include?("text/html")
-
-          script_name = env["SCRIPT_NAME"]
-          full_path = script_name.empty? ? env["PATH_INFO"] : "#{script_name}#{env["PATH_INFO"]}"
-          full_path == @mount_path || full_path.start_with?(@mount_path_prefix)
+        def inject_theme?(status, headers)
+          status == 200 && headers["content-type"]&.include?("text/html")
         end
 
         def build_injection(color_scheme, nonce)

@@ -67,7 +67,6 @@ This creates `config/initializers/mission_control_jobs_theme.rb`:
 MissionControl::Jobs::Theme.configure do |config|
   # config.color_scheme = :auto          # :auto, :light, :dark
   # config.color_scheme_switcher = true  # show navbar toggle
-  # config.mount_path = "/jobs"          # override auto-discovery
   # config.syntax_highlighting = true    # PrismJS on job detail
   # config.theme = :malachite            # available: :malachite
 end
@@ -77,7 +76,6 @@ end
 |--------------------------|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `color_scheme`           | `:auto`                 | Light/dark appearance. `:auto` follows the OS preference via `prefers-color-scheme`; `:light` or `:dark` forces one.                                                       |
 | `color_scheme_switcher`  | `true`                  | Show a light/dark/auto toggle in the navbar. When `false`, the scheme is locked to the configured default.                                                                 |
-| `mount_path`             | `nil` (auto-discovered) | Override the path where `MissionControl::Jobs::Engine` is mounted. When `nil`, the gem walks `Rails.application.routes` to find it automatically, falling back to `/jobs`. |
 | `syntax_highlighting`    | `true`                  | Enable PrismJS JSON syntax highlighting on job detail pages. Set to `false` to inject only the CSS theme.                                                                  |
 | `theme`                  | `:malachite`            | Visual theme family. Each family provides both light and dark variants.                                                                                                    |
 
@@ -91,16 +89,16 @@ end
 
 If the theme doesn't appear:
 
-1. Verify the middleware is loaded — check that `MissionControl::Jobs::Theme::Middleware` appears in `bin/rails middleware` output.
-2. Check mount path detection in the console:
-   ```ruby
-   MissionControl::Jobs::Theme::RouteDiscovery.discover(Rails.application.routes)
-   ```
-   If it returns an unexpected path, set `config.mount_path` explicitly in the initializer.
-3. Ensure the engine is mounted in `config/routes.rb`:
+1. Ensure `mission_control-jobs` is in your `Gemfile` and the engine is mounted in `config/routes.rb`:
    ```ruby
    mount MissionControl::Jobs::Engine, at: "/jobs"
    ```
+2. Verify the middleware is attached to the engine's own stack:
+   ```ruby
+   MissionControl::Jobs::Engine.app # force the stack to build if no request has been served yet
+   MissionControl::Jobs::Engine.middleware.middlewares.map(&:klass)
+   ```
+   The list should include `MissionControl::Jobs::Theme::Middleware`. (The middleware runs on the engine stack, not the host app stack, so it does not appear in `bin/rails middleware` output.)
 
 ## Contributing
 

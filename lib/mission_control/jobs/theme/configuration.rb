@@ -27,10 +27,6 @@ module MissionControl
         #   (default: +true+)
         attr_accessor :color_scheme_switcher
 
-        # @return [String, nil] override the auto-discovered engine mount path
-        #   (e.g. +"/admin/jobs"+). When +nil+, {RouteDiscovery} detects it at boot.
-        attr_accessor :mount_path
-
         # @return [Boolean] whether to inject Prism.js syntax highlighting for
         #   JSON payloads (default: +true+)
         attr_accessor :syntax_highlighting
@@ -41,7 +37,6 @@ module MissionControl
         def initialize
           @color_scheme = DEFAULT_COLOR_SCHEME
           @color_scheme_switcher = true
-          @mount_path = nil
           @syntax_highlighting = true
           @theme = DEFAULT_THEME
         end

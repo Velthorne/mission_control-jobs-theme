@@ -1,6 +1,8 @@
 ## [Unreleased]
 
 - Migrate theme assets from `Rack::Static` to the Rails asset pipeline (adds sub-URI deployment support, fixes stale assets after gem upgrade)
+- Move theme injection off the host app's middleware stack (with mount-path matching) and into `MissionControl::Jobs::Engine` middleware
+  - **Breaking:** `config.mount_path` has been removed. Delete it from your initializer — Rails routing now determines when the middleware runs.
 
 ## [0.3.2] - 2026-04-18
 

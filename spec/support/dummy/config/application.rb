@@ -12,9 +12,7 @@ module Dummy
     config.eager_load = false
     config.logger = Logger.new(nil)
     config.root = File.expand_path("..", __dir__)
-
-    routes.draw do
-      mount MissionControl::Jobs::Engine, at: "/jobs"
-    end
+    # Rack::MockRequest uses example.org; disable host authorization so specs don't 403.
+    config.hosts.clear
   end
 end

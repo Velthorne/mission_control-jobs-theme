@@ -4,7 +4,6 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
   subject(:config) { described_class.new }
 
   it "has sensible defaults" do
-    expect(config.mount_path).to be_nil
     expect(config.syntax_highlighting).to be(true)
     expect(config.color_scheme_switcher).to be(true)
     expect(config.theme).to eq(:malachite)
@@ -12,11 +11,9 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
   end
 
   it "allows overriding settings" do
-    config.mount_path = "/admin/jobs"
     config.syntax_highlighting = false
     config.color_scheme_switcher = false
 
-    expect(config.mount_path).to eq("/admin/jobs")
     expect(config.syntax_highlighting).to be(false)
     expect(config.color_scheme_switcher).to be(false)
   end
@@ -85,16 +82,16 @@ RSpec.describe MissionControl::Jobs::Theme::Configuration do
     end
 
     it "yields configuration to the configure block" do
-      MissionControl::Jobs::Theme.configure { |c| c.mount_path = "/custom" }
+      MissionControl::Jobs::Theme.configure { |c| c.syntax_highlighting = false }
 
-      expect(MissionControl::Jobs::Theme.configuration.mount_path).to eq("/custom")
+      expect(MissionControl::Jobs::Theme.configuration.syntax_highlighting).to be(false)
     end
 
     it "resets configuration to defaults via reset_configuration!" do
-      MissionControl::Jobs::Theme.configure { |c| c.mount_path = "/custom" }
+      MissionControl::Jobs::Theme.configure { |c| c.syntax_highlighting = false }
       MissionControl::Jobs::Theme.reset_configuration!
 
-      expect(MissionControl::Jobs::Theme.configuration.mount_path).to be_nil
+      expect(MissionControl::Jobs::Theme.configuration.syntax_highlighting).to be(true)
     end
   end
 end
