@@ -7,9 +7,6 @@ MissionControl::Jobs::Theme.configure do |config|
   # Show the light/dark/auto toggle in the navbar (set false to lock the scheme).
   # config.color_scheme_switcher = true
 
-  # Override the auto-discovered MissionControl::Jobs::Engine mount path.
-  # config.mount_path = "/jobs"
-
   # Inject PrismJS for syntax-highlighted JSON on job detail pages.
   # config.syntax_highlighting = true
 
