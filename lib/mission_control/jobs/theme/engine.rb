@@ -11,9 +11,9 @@ module MissionControl
       # Rails owns that determination, which makes the middleware correct under
       # sub-URI deployments and for any host-app mount path.
       #
-      # Theme assets ship through Propshaft (or Sprockets) via the standard
-      # +app/assets/+ and +vendor/assets/+ conventions — this Engine's asset
-      # paths are picked up automatically by the asset pipeline.
+      # Theme assets ship through Propshaft via the standard +app/assets/+ and
+      # +vendor/assets/+ conventions — this Engine's asset paths are picked up
+      # automatically by the asset pipeline.
       #
       # @see Configuration
       # @see Middleware

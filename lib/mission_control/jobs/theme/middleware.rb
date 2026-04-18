@@ -16,9 +16,9 @@ module MissionControl
       # stylesheets are injected with +prefers-color-scheme+ media queries.
       # When an explicit scheme is active, only that variant's CSS is loaded.
       #
-      # Asset URLs are resolved through the Rails asset pipeline
-      # (Propshaft/Sprockets), so injected +<link>+ and +<script>+ tags use
-      # fingerprinted, cache-friendly paths that respect +config.relative_url_root+.
+      # Asset URLs are resolved through the Rails asset pipeline (Propshaft),
+      # so injected +<link>+ and +<script>+ tags use fingerprinted,
+      # cache-friendly paths that respect +config.relative_url_root+.
       #
       # Injected +<script>+ tags automatically receive a CSP nonce when one is
       # available via +action_dispatch.content_security_policy_nonce+ in the Rack

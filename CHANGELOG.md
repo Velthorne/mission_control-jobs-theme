@@ -4,6 +4,7 @@
 - Move theme injection off the host app's middleware stack (with mount-path matching) and into `MissionControl::Jobs::Engine` middleware
   - **Breaking:** `config.mount_path` has been removed. Delete it from your initializer — Rails routing now determines when the middleware runs.
 - Automate assets minification via a `rake assets:minify` task (using esbuild)
+- Drop Sprockets support and require Propshaft — needed to fingerprint the bundled font URLs in CSS assets
 
 ## [0.3.2] - 2026-04-18
 

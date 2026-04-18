@@ -31,7 +31,7 @@ A drop-in visual theme for [MissionControl::Jobs](https://github.com/rails/missi
 - Ruby **>= 3.2**
 - Rails **>= 7.1**
 - [mission_control-jobs](https://github.com/rails/mission_control-jobs) **>= 1.1**
-- **Propshaft** or **Sprockets** (already required by `mission_control-jobs`)
+- Propshaft
 
 ## Installation
 
@@ -51,7 +51,7 @@ That's it — the theme activates automatically, no configuration is required.
 
 ## How it works
 
-Theme CSS, JS, and fonts are served through the host app's Propshaft or Sprockets load path. A Rack middleware intercepts HTML responses from `MissionControl::Jobs::Engine` and injects the asset links, a color scheme switcher, and optional [PrismJS](https://prismjs.com) syntax highlighting before `</head>` — with CSP nonces applied to `<script>` tags when available.
+Theme CSS, JS, and fonts are served through the host app's Propshaft load path. A Rack middleware intercepts HTML responses from `MissionControl::Jobs::Engine` and injects the asset links, a color scheme switcher, and optional [PrismJS](https://prismjs.com) syntax highlighting before `</head>` — with CSP nonces applied to `<script>` tags when available.
 
 ## Configuration
 
@@ -82,7 +82,7 @@ end
 ## Compatibility
 
 - Designed for **MissionControl::Jobs 1.1+** which uses Bulma for its UI. The theme overrides Bulma variables and component styles, so it stays functional even if upstream markup changes.
-- Works with **Propshaft** and **Sprockets** — theme assets are shipped through the host app's asset pipeline with fingerprinted URLs.
+- Requires **Propshaft**. Theme assets ship through the host app's asset pipeline with fingerprinted URLs. Sprockets is not supported because its `url()` rewriting does not apply to plain `.css`, so `@font-face` paths would not be fingerprinted.
 - Tested with **Solid Queue**. **Resque** works but may have unstyled areas in adapter-specific views.
 
 ## Troubleshooting
