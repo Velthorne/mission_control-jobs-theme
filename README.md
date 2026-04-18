@@ -54,7 +54,7 @@ The theme is active immediately — no configuration required.
 
 ## How it works
 
-The gem inserts Rack middleware that intercepts HTML responses from the MissionControl::Jobs engine and injects theme stylesheets, a color scheme switcher, and optional [PrismJS](https://prismjs.com) syntax highlighting before `</head>`. Assets are served via `Rack::Static` independently of the host app's asset pipeline — no Propshaft or Sprockets integration required. The CSS overrides Bulma variables and component styles, so the theme stays functional even if upstream markup changes.
+The gem inserts Rack middleware that intercepts HTML responses from the MissionControl::Jobs engine and injects theme stylesheets, a color scheme switcher, and optional [PrismJS](https://prismjs.com) syntax highlighting before `</head>`. Injected `<script>` tags automatically receive a CSP nonce when one is available in the request. Assets are served via `Rack::Static` independently of the host app's asset pipeline — no Propshaft or Sprockets integration required. The CSS overrides Bulma variables and component styles, so the theme stays functional even if upstream markup changes.
 
 ## Configuration
 
