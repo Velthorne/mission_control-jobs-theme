@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.3.2] - 2026-04-17
+
+- Automatic CSP nonce support for injected script tags
+
 ## [0.3.1] - 2026-04-17
 
 - Visual refinements across both themes for improved consistency and accessibility

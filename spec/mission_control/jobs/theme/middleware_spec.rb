@@ -16,9 +16,10 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
     described_class.new(inner, **opts)
   end
 
-  def request(app, script_name: "", path: "/", cookie: nil)
+  def request(app, script_name: "", path: "/", cookie: nil, csp_nonce: nil)
     env = { "SCRIPT_NAME" => script_name, "PATH_INFO" => path }
     env["HTTP_COOKIE"] = "#{MissionControl::Jobs::Theme::Configuration::COOKIE_NAME}=#{cookie}" if cookie
+    env["action_dispatch.content_security_policy_nonce"] = csp_nonce if csp_nonce
     app.call(env)
   end
 
@@ -129,6 +130,46 @@ RSpec.describe MissionControl::Jobs::Theme::Middleware do
       result = body.join
       expect(result).to include('malachite_light.min.css">')
       expect(result).not_to include("malachite_dark")
+    end
+  end
+
+  context "with CSP nonce" do
+    it "adds nonce from env to script tags but not stylesheet links, and updates content-length" do
+      app = build_app(headers: { "content-type" => "text/html", "content-length" => html.bytesize.to_s })
+      _, headers, body = request(app, script_name: "/jobs", csp_nonce: "test123")
+      result = body.join
+
+      expect(result).to include('prism.min.js" data-manual nonce="test123"',
+                                'prism-init.js" nonce="test123"',
+                                'color-scheme-switcher.js" data-default-color-scheme="auto" ' \
+                                'data-cookie-name="mc_jobs_color_scheme" nonce="test123"')
+      expect(result).not_to match(/<link[^>]*nonce/)
+      expect(headers["content-length"]).to eq(result.bytesize.to_s)
+    end
+
+    it "extracts nonce from csp-nonce meta tag when env key is absent" do
+      html_with_meta = '<!DOCTYPE html><html><head><meta name="csp-nonce" content="xBf3+9/Rq=">' \
+                       "<title>MC</title></head><body>OK</body></html>"
+      app = build_app(body: html_with_meta)
+      _, _, body = request(app, script_name: "/jobs")
+
+      expect(body.join).to include('nonce="xBf3+9/Rq="')
+    end
+
+    it "prefers env nonce over csp-nonce meta tag" do
+      html_with_meta = '<!DOCTYPE html><html><head><meta name="csp-nonce" content="fromMeta">' \
+                       "<title>MC</title></head><body>OK</body></html>"
+      app = build_app(body: html_with_meta)
+      result = request(app, script_name: "/jobs", csp_nonce: "fromEnv").last.join
+
+      expect(result).to include('nonce="fromEnv"')
+      expect(result).not_to include('nonce="fromMeta"')
+    end
+
+    it "omits nonce attribute when no nonce source is available" do
+      _, _, body = request(build_app, script_name: "/jobs")
+
+      expect(body.join).not_to include("nonce")
     end
   end
 

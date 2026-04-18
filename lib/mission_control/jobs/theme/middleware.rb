@@ -17,6 +17,10 @@ module MissionControl
       # stylesheets are injected with +prefers-color-scheme+ media queries.
       # When an explicit scheme is active, only that variant's CSS is loaded.
       #
+      # Injected +<script>+ tags automatically receive a CSP nonce when one is
+      # available via +action_dispatch.content_security_policy_nonce+ in the Rack
+      # env or a +<meta name="csp-nonce">+ tag in the response body.
+      #
       # @see Railtie
       # @see RouteDiscovery
       #
@@ -27,8 +31,8 @@ module MissionControl
       #
       #   use MissionControl::Jobs::Theme::Middleware, mount_path: "/admin/jobs", config: config
       class Middleware
-        PRISM_JS   = '<script src="/mission_control/js/prism.min.js" data-manual></script>'
-        PRISM_INIT = '<script src="/mission_control/js/prism-init.js"></script>'
+        NONCE_PLACEHOLDER = "THEME_NONCE"
+        NONCE_ATTR = " nonce=\"#{NONCE_PLACEHOLDER}\"".freeze
 
         # @param app [#call] the next Rack application in the middleware stack
         # @param mount_path [String] engine mount path to match against requests
@@ -54,11 +58,13 @@ module MissionControl
           status, headers, response = @app.call(env)
 
           if inject_theme?(env, status, headers)
-            injection = @injections[resolve_color_scheme(env)]
-
             body = +""
             response.each { |part| body << part }
             response.close if response.respond_to?(:close)
+
+            scheme = resolve_color_scheme(env)
+            nonce = resolve_csp_nonce(env, body)
+            injection = @injections[scheme].gsub(nonce ? NONCE_PLACEHOLDER : NONCE_ATTR, nonce || "")
 
             body.sub!("</head>", injection)
             headers["content-length"] = body.bytesize.to_s if headers.key?("content-length")
@@ -80,6 +86,19 @@ module MissionControl
 
           value = ::Rack::Utils.parse_cookies_header(header)[Configuration::COOKIE_NAME]&.to_sym
           value if value && Configuration::COLOR_SCHEMES.include?(value)
+        end
+
+        # Checks the Rack env first (set by Rails when the view renders
+        # +csp_meta_tag+), then falls back to extracting it from the HTML
+        # +<meta name="csp-nonce">+ tag. The meta-tag path only recognises
+        # standard and URL-safe Base64 nonces; the env path accepts any string.
+        #
+        # @param env [Hash] Rack environment hash
+        # @param body [String] accumulated HTML response body
+        # @return [String, nil] the nonce value, or +nil+ if not available
+        def resolve_csp_nonce(env, body)
+          env["action_dispatch.content_security_policy_nonce"] ||
+            body[/<meta name="csp-nonce" content="([A-Za-z0-9+\/=\-_]+)"/, 1]
         end
 
         # Determine whether the response should receive theme injection.
@@ -125,7 +144,13 @@ module MissionControl
             prism_theme = scheme == :dark ? "tomorrow" : "default"
             into << stylesheet_tag("/mission_control/css/prism.#{prism_theme}.min.css", scheme: (scheme if auto))
           end
-          into.push(PRISM_JS, PRISM_INIT)
+          into << script_tag("/mission_control/js/prism.min.js", extra: "data-manual")
+          into << script_tag("/mission_control/js/prism-init.js")
+        end
+
+        def script_tag(src, extra: nil)
+          extra_attrs = extra ? " #{extra}" : ""
+          %(<script src="#{src}"#{extra_attrs}#{NONCE_ATTR}></script>)
         end
 
         def stylesheet_tag(href, scheme: nil)
@@ -134,9 +159,11 @@ module MissionControl
         end
 
         def color_scheme_switcher_tag
-          "<script src=\"/mission_control/js/color-scheme-switcher.js\" " \
-            "data-default-color-scheme=\"#{@default_color_scheme}\" " \
-            "data-cookie-name=\"#{Configuration::COOKIE_NAME}\"></script>"
+          script_tag(
+            "/mission_control/js/color-scheme-switcher.js",
+            extra: "data-default-color-scheme=\"#{@default_color_scheme}\" " \
+                   "data-cookie-name=\"#{Configuration::COOKIE_NAME}\""
+          )
         end
       end
     end
